@@ -6,7 +6,7 @@
         public string brandCode { set; get; }
         public string brandName { set; get; }
         public string UrlImageBrand { set; get; }
-        public List<CategoryBrand> CategoryBrand { get; } = [];
+        public List<CategoryBrand> CategoryBrand { get; set; } = [];
         public List<Product> Products { get; } = new List<Product>();
     }
 }

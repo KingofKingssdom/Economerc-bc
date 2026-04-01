@@ -4,13 +4,12 @@ using Ecommerce.DTOs.ResponseDTOs;
 using Ecommerce.Models;
 using Ecommerce.Util;
 using Microsoft.EntityFrameworkCore;
-
 namespace Ecommerce.Services.Impl
 {
     public class BrandServiceImpl: IBrandService   
     {
         private readonly MyAppContext _context;
-        private readonly FileStorageUtil _fileStorageUtil;
+        private readonly FileStorageUtil _fileStorageUtil; 
 
         public BrandServiceImpl(MyAppContext context, FileStorageUtil fileStorage)
         {
@@ -19,40 +18,93 @@ namespace Ecommerce.Services.Impl
         }
         public async Task<ResBrandDto> CreateBrandAsync(ReqBrandDto reqBrandDto)
         {
-            string? imagePath = await _fileStorageUtil.UploadImage(reqBrandDto.UrlImageBrand, "Brands");
-            Brand brand = new Brand
+            
+            var existingBrand = await _context.Brands
+                .Include(b => b.CategoryBrand) 
+                .FirstOrDefaultAsync(b => b.brandCode == reqBrandDto.brandCode);
 
+            Brand brand;
+
+            if (existingBrand == null)
             {
-                brandCode = reqBrandDto.brandCode,
-                brandName = reqBrandDto.brandName,
-                UrlImageBrand = imagePath
-            };
-            bool isExist = await _context.Brands.AnyAsync(c => c.brandCode == reqBrandDto.brandCode);
                 
-            if (isExist)
-            {
-                throw new Exception("Brand code already exist!");
+                string? imagePath = await _fileStorageUtil.UploadImage(reqBrandDto.UrlImageBrand, "Brands");
+                brand = new Brand
+                {
+                    brandCode = reqBrandDto.brandCode,
+                    brandName = reqBrandDto.brandName,
+                    UrlImageBrand = imagePath,
+                    CategoryBrand = new List<CategoryBrand>()
+                };
+                await _context.Brands.AddAsync(brand);
             }
-            await _context.Brands.AddAsync(brand);
+            else
+            {
+                brand = existingBrand;
+                brand.brandName = reqBrandDto.brandName;
+            }
+
+            
+            if (reqBrandDto.CategoryIds != null)
+            {
+                foreach (var categoryId in reqBrandDto.CategoryIds)
+                {
+                   
+                    bool alreadyMapped = brand.CategoryBrand.Any(cb => cb.CategoryId == categoryId);
+
+                    if (!alreadyMapped)
+                    {
+                        var categoryBrand = new CategoryBrand
+                        {
+                            Brand = brand,
+                            CategoryId = categoryId
+                        };
+                        brand.CategoryBrand.Add(categoryBrand);
+                    }
+                }
+            }
+
             await _context.SaveChangesAsync();
+
+            
+            var brandWithDetails = await _context.Brands
+                .Include(b => b.CategoryBrand)
+                    .ThenInclude(cb => cb.Category)
+                .FirstOrDefaultAsync(b => b.Id == brand.Id);
+
             return new ResBrandDto
             {
-                Id = brand.Id,
-                brandCode = brand.brandCode,
-                brandName = brand.brandName,
-                UrlImageBrand = brand.UrlImageBrand
+                Id = brandWithDetails.Id,
+                brandCode = brandWithDetails.brandCode,
+                brandName = brandWithDetails.brandName,
+                UrlImageBrand = brandWithDetails.UrlImageBrand,
+                Categories = brandWithDetails.CategoryBrand.Select(c => new ResCategoryDto
+                {
+                    Id = c.CategoryId,
+                    CategoryName = c.Category?.CategoryName ?? "N/A"
+                }).ToList()
             };
+        
         }
 
         public async Task<List<ResBrandDto>> GetAllBrandAsync()
         {
-            List<Brand> brands = await _context.Brands.ToListAsync();
+            var brands = await _context.Brands
+                                .Include(b => b.CategoryBrand)           
+                                .ThenInclude(cb => cb.Category)                            
+                                .ToListAsync();
             var result = brands.Select(brand => new ResBrandDto
             {
                 Id = brand.Id,
                 brandCode = brand.brandCode,
                 brandName = brand.brandName,
-                UrlImageBrand = brand.UrlImageBrand
+                UrlImageBrand = brand.UrlImageBrand,
+                Categories = brand.CategoryBrand.Select(cb => new ResCategoryDto
+                {
+                    Id = cb.CategoryId,
+                    CategoryName = cb.Category.CategoryName,
+                    CategoryCode = cb.Category.CategoryCode
+                }).ToList()
 
             }).ToList();
             return result;
