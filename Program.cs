@@ -23,6 +23,7 @@ namespace Ecommerce
             builder.Services.AddScoped<ICategoryService, CategoryServiceImpl>();
             builder.Services.AddScoped<IBrandService, BrandServiceImpl>();
             builder.Services.AddScoped<IProductService, ProductServiceImpl>();
+            builder.Services.AddScoped<IProductColorService, ProductColorServiceImpl>();
             builder.Services.AddScoped<FileStorageUtil>();
             var app = builder.Build();
 

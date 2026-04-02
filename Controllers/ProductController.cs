@@ -7,7 +7,7 @@ namespace Ecommerce.Controllers
 {
     [ApiController]
     [Route("api/product")]
-    public class ProductController: ControllerBase
+    public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
         public ProductController(IProductService productService)
@@ -29,7 +29,7 @@ namespace Ecommerce.Controllers
         public async Task<ActionResult<ResBrandDto>> GetAll()
         {
             var products = await _productService.GetAllProduct();
-            if(products == null)
+            if (products == null)
             {
                 return NotFound(new { message = "Products not found!" });
             }
@@ -39,7 +39,40 @@ namespace Ecommerce.Controllers
                 message = "Get Product success",
                 data = products
             });
-            
+
         }
+        [HttpPut("{productCode}")]
+        public async Task<ActionResult<ResProductDto>> Update(string productCode, ReqProductDto reqProductDto)
+        {
+            var product = await _productService.UpdateProduct(productCode, reqProductDto);
+            try
+            {
+                return Ok(new
+                {
+                    message = "Update success",
+                    data = product
+                });
+            }catch(Exception ex)
+            {
+                return BadRequest(new { ex.Message });
+            }
+        }
+        [HttpDelete("{productCode}")]
+        public async Task<ActionResult<ResProductDto>> Delete(string productCode)
+        {
+            var product = await _productService.DeleteProduct(productCode);
+            try
+            {
+                return Ok(new
+                {
+                    message = "Delete success",
+                    data = product
+                });
+            }catch(Exception ex)
+            {
+                return NotFound(new { ex.Message });
+            }
+        }
+
     }
 }

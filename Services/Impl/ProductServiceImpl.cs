@@ -89,6 +89,7 @@ namespace Ecommerce.Services.Impl
             {
                 throw new Exception($"Not found with product code = {productCode}");
             }
+            
             var ResProduct = new ResProductDto
             {
                 Id = product.Id,
@@ -116,6 +117,8 @@ namespace Ecommerce.Services.Impl
         }
         public async Task<ResProductDto> UpdateProduct(string productCode, ReqProductDto reqProductDto) {
             Product? product = await _context.Products
+                .Include(p=>p.Category)
+                .Include(p=>p.Brand)
                 .FirstOrDefaultAsync(p => p.ProductCode == productCode);
             if(product == null)
             {
@@ -127,18 +130,20 @@ namespace Ecommerce.Services.Impl
             {
                 throw new Exception($"Product with productCode = {productCode} already");
             }
-            string? urlImageProduct = await _fileStorageUtil.UploadImage(reqProductDto.UrlImageProduct, "Products");
+            if(reqProductDto.UrlImageProduct != null)
+            {
+                product.UrlImageProduct = await _fileStorageUtil.UploadImage(reqProductDto.UrlImageProduct, "Products");
+            }
+            
             product.ProductCode = reqProductDto.ProductCode;
             product.ProductName = reqProductDto.ProductName;
             product.Description = reqProductDto.Description;
-            product.UrlImageProduct = urlImageProduct;
             product.IsFeatured = reqProductDto.IsFeatured;
             product.IsOnPromotion = reqProductDto.IsOnPromotion;
             product.BrandId = reqProductDto.BrandId;
             product.CategoryId = reqProductDto.CategoryId;
-            
-            // Product is already tracked by the DbContext; do not add it again for update
             await _context.SaveChangesAsync();
+            
             ResProductDto resProduct = new ResProductDto
             {
                 Id = product.Id,
@@ -166,6 +171,8 @@ namespace Ecommerce.Services.Impl
         public async Task<ResProductDto> DeleteProduct(string productCode)
         {
             Product product = await _context.Products
+                .Include(p=>p.Category)
+                .Include(p=>p.Brand)
                 .FirstOrDefaultAsync(p=> p.ProductCode == productCode);
             if(product == null)
             {
