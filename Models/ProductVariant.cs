@@ -8,5 +8,9 @@
         public double PriceDiscount { set; get; }
         public long ProductId { set; get; }
         public Product Product { set; get; } = null!;
+        public long ProductColorId { set; get; }
+        public ProductColor ProductColor { set; get; }
+        public int Stock { set; get; }
+
     }
 }

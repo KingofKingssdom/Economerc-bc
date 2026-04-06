@@ -29,7 +29,15 @@ namespace Ecommerce.Services.Impl
                 IsOnPromotion = reqProductDto.IsOnPromotion,
                 BrandId = reqProductDto.BrandId,
                 CategoryId = reqProductDto.CategoryId
+            
             };
+            foreach (var productSpecificationId in reqProductDto.ProductSpecificationId)
+            {
+                product.ProductSpecifications.Add(new ProductSpecificationMapping
+                {
+                    ProductSpecificationId = productSpecificationId
+                });
+            }
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
             return new ResProductDto
@@ -52,6 +60,8 @@ namespace Ecommerce.Services.Impl
             List<Product> products = await _context.Products
                         .Include(p=>p.Category)
                         .Include(p=> p.Brand)
+                        .Include(ps=>ps.ProductSpecifications)
+                        .ThenInclude(ps=>ps.ProductSpecification)
                         .ToListAsync();
             
             var result = products.Select(p => new ResProductDto
@@ -75,7 +85,14 @@ namespace Ecommerce.Services.Impl
                     brandCode = p.Brand.brandCode,
                     brandName = p.Brand.brandName,
                     UrlImageBrand = p.Brand.UrlImageBrand
-                }
+                },
+                ResProductSpecification = p.ProductSpecifications
+                .Select(ps=> new ResProductSpecificationDto
+                {
+
+                    Id = ps.ProductSpecification.Id,
+                    SpecificationName = ps.ProductSpecification.SpecificationName
+                }).ToList()
                 
             }).ToList();
             return result;
@@ -89,7 +106,7 @@ namespace Ecommerce.Services.Impl
             {
                 throw new Exception($"Not found with product code = {productCode}");
             }
-            
+
             var ResProduct = new ResProductDto
             {
                 Id = product.Id,
@@ -110,8 +127,14 @@ namespace Ecommerce.Services.Impl
                     Id = product.Category.Id,
                     CategoryCode = product.Category.CategoryCode,
                     CategoryName = product.Category.CategoryName
-                }
+                },
+                ResProductSpecification = product.ProductSpecifications
+                .Select(ps => new ResProductSpecificationDto
+                {
 
+                    Id = ps.ProductSpecification.Id,
+                    SpecificationName = ps.ProductSpecification.SpecificationName
+                }).ToList()
             };
             return ResProduct;
         }
@@ -119,6 +142,7 @@ namespace Ecommerce.Services.Impl
             Product? product = await _context.Products
                 .Include(p=>p.Category)
                 .Include(p=>p.Brand)
+                .Include(ps=>ps.ProductSpecifications)
                 .FirstOrDefaultAsync(p => p.ProductCode == productCode);
             if(product == null)
             {
@@ -134,7 +158,7 @@ namespace Ecommerce.Services.Impl
             {
                 product.UrlImageProduct = await _fileStorageUtil.UploadImage(reqProductDto.UrlImageProduct, "Products");
             }
-            
+            product.ProductSpecifications.Clear();
             product.ProductCode = reqProductDto.ProductCode;
             product.ProductName = reqProductDto.ProductName;
             product.Description = reqProductDto.Description;
@@ -142,6 +166,13 @@ namespace Ecommerce.Services.Impl
             product.IsOnPromotion = reqProductDto.IsOnPromotion;
             product.BrandId = reqProductDto.BrandId;
             product.CategoryId = reqProductDto.CategoryId;
+            foreach (var productSpecificationId in reqProductDto.ProductSpecificationId)
+            {
+                product.ProductSpecifications.Add(new ProductSpecificationMapping
+                {
+                    ProductSpecificationId = productSpecificationId
+                });
+            }
             await _context.SaveChangesAsync();
             
             ResProductDto resProduct = new ResProductDto
@@ -164,7 +195,15 @@ namespace Ecommerce.Services.Impl
                     Id = product.Category.Id,
                     CategoryCode = product.Category.CategoryCode,
                     CategoryName = product.Category.CategoryName
-                }
+                },
+                ResProductSpecification = product.ProductSpecifications
+                .Select(ps => new ResProductSpecificationDto
+                {
+
+                    Id = ps.ProductSpecification.Id,
+                    SpecificationName = ps.ProductSpecification.SpecificationName
+                }).ToList()
+
             };
             return resProduct;
         }

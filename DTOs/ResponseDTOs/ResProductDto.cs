@@ -13,6 +13,6 @@
         public long CategoryId { set; get; }
         public ResBrandDto ResBrandDto { set; get; }
         public ResCategoryDto ResCategory { set; get; } 
-
+        public List<ResProductSpecificationDto> ResProductSpecification { set; get; }
     }
 }

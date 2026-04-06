@@ -1,12 +1,13 @@
-﻿namespace Ecommerce.Models
+﻿namespace Ecommerce.DTOs.ResponseDTOs
 {
-    public class User
+    public class ResUserDto
     {
         public long Id { set; get; }
         public string FullName { set; get; }
+
         public string PhoneNumber { set; get; }
         public string Email { set; get; }
-        public string Password { set; get; }
-        public List<UserRole> UserRoles { get; } = [];
+        public List<ResRoleDto> ResRoleDtos { set; get; }
+
     }
 }

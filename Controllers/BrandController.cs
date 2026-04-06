@@ -50,7 +50,7 @@ namespace Ecommerce.Controllers
         {
             try
             {
-                var resBrandDto = _brandService.GetBrandByBrandCodeAsync(brandCode);
+                var resBrandDto = await _brandService.GetBrandByBrandCodeAsync(brandCode);
                 return Ok(new
                 {
                     message= "Get data successfully",

@@ -1,4 +1,6 @@
-﻿namespace Ecommerce.DTOs.RequestDTOs
+﻿using Ecommerce.Models;
+
+namespace Ecommerce.DTOs.RequestDTOs
 {
     public class ReqProductDto
     {
@@ -10,5 +12,8 @@
         public bool IsOnPromotion { set; get; }
         public long BrandId { set; get; }
         public long CategoryId { set; get; }
+        public List<long> ProductSpecificationId { set; get; }
+
+
     }
 }

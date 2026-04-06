@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce.Migrations
 {
     [DbContext(typeof(MyAppContext))]
-    [Migration("20260322124444_UpdateCategoryV2")]
-    partial class UpdateCategoryV2
+    [Migration("20260406130545_UpdateUserRole")]
+    partial class UpdateUserRole
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -247,7 +247,7 @@ namespace Ecommerce.Migrations
 
                     b.Property<string>("ProductCode")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
@@ -262,6 +262,9 @@ namespace Ecommerce.Migrations
                     b.HasIndex("BrandId");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("ProductCode")
+                        .IsUnique();
 
                     b.ToTable("Products");
                 });
@@ -338,14 +341,22 @@ namespace Ecommerce.Migrations
                     b.Property<double>("PriceOrigin")
                         .HasColumnType("float");
 
+                    b.Property<long>("ProductColorId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("ProductId")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("int");
 
                     b.Property<string>("Storage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductColorId");
 
                     b.HasIndex("ProductId");
 
@@ -384,6 +395,9 @@ namespace Ecommerce.Migrations
                     b.Property<long>("ProductId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("ProductSpecificationId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("ValueSpecification")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -391,6 +405,8 @@ namespace Ecommerce.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductSpecificationId");
 
                     b.ToTable("SpecificationDetail");
                 });
@@ -405,21 +421,24 @@ namespace Ecommerce.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Passwork")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email", "PhoneNumber")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -577,6 +596,12 @@ namespace Ecommerce.Migrations
 
             modelBuilder.Entity("Ecommerce.Models.ProductVariant", b =>
                 {
+                    b.HasOne("Ecommerce.Models.ProductColor", "ProductColor")
+                        .WithMany("ProductVariants")
+                        .HasForeignKey("ProductColorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Ecommerce.Models.Product", "Product")
                         .WithMany("ProductVariants")
                         .HasForeignKey("ProductId")
@@ -584,6 +609,8 @@ namespace Ecommerce.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+
+                    b.Navigation("ProductColor");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.SpecificationDetail", b =>
@@ -594,7 +621,15 @@ namespace Ecommerce.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Ecommerce.Models.ProductSpecification", "ProductSpecification")
+                        .WithMany()
+                        .HasForeignKey("ProductSpecificationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Product");
+
+                    b.Navigation("ProductSpecification");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.UserRole", b =>
@@ -649,6 +684,11 @@ namespace Ecommerce.Migrations
                     b.Navigation("ProductVariants");
 
                     b.Navigation("SepcificationDetail");
+                });
+
+            modelBuilder.Entity("Ecommerce.Models.ProductColor", b =>
+                {
+                    b.Navigation("ProductVariants");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.ProductSpecification", b =>

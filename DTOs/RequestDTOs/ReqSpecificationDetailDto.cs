@@ -1,13 +1,11 @@
-﻿namespace Ecommerce.Models
+﻿namespace Ecommerce.DTOs.RequestDTOs
 {
-    public class SpecificationDetail
+    public class ReqSpecificationDetailDto
     {
-        public long Id { set; get; }
         public string LableSpecification { set; get; }
         public string ValueSpecification { set; get; }
         public long ProductId { set; get; }
-        public Product Product { set; get; }
         public long ProductSpecificationId { set; get; }
-        public ProductSpecification ProductSpecification { set; get; }
+
     }
 }

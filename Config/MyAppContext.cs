@@ -50,6 +50,29 @@ namespace Ecommerce.Data
                .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId , ur.RoleId });
+            modelBuilder.Entity<SpecificationDetail>()
+                .HasOne(sd => sd.ProductSpecification)
+                .WithMany()
+                .HasForeignKey(sd => sd.ProductSpecificationId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Product>()
+                .HasIndex(p => p.ProductCode)
+                .IsUnique();
+            modelBuilder.Entity<ProductVariant>()
+                .HasOne(pv => pv.ProductColor)
+                .WithMany(pc => pc.ProductVariants)
+                .HasForeignKey(pv => pv.ProductColorId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<User>()
+                .HasIndex(u=> new {u.Email, u.PhoneNumber})       
+                .IsUnique();
+            modelBuilder.Entity<UserRole>()
+                .HasOne(ur => ur.User)
+                .WithMany(u => u.UserRoles)
+                .HasForeignKey(ur => ur.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
         }
         public DbSet<Category> Categories { set; get; }
         public DbSet<Brand> Brands { set; get; }
@@ -59,7 +82,7 @@ namespace Ecommerce.Data
         public DbSet<ProductVariant> ProductVariants { set; get; }
         public DbSet<ProductSpecification> ProductSpecifications { set; get; }
         public DbSet<ProductSpecificationMapping> ProductSpecificationMappings { set; get; }
-
+        public DbSet<SpecificationDetail> SpecificationDetail { set; get; }
         public DbSet<Cart> Carts { set; get; }
         public DbSet<CartItem> CartItems { set; get; }
         public DbSet<Order> Orders { set; get; }

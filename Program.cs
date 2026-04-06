@@ -16,6 +16,8 @@ namespace Ecommerce
             // Add services to the container.
     
             builder.Services.AddControllers();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddDbContext<MyAppContext>(options =>
@@ -24,6 +26,11 @@ namespace Ecommerce
             builder.Services.AddScoped<IBrandService, BrandServiceImpl>();
             builder.Services.AddScoped<IProductService, ProductServiceImpl>();
             builder.Services.AddScoped<IProductColorService, ProductColorServiceImpl>();
+            builder.Services.AddScoped<IProductVariantService, ProductVariantSerivceImpl>();
+            builder.Services.AddScoped<IProductSpecificationService, ProductSpecificationServiceIpml>();
+            builder.Services.AddScoped<ISpecificationDetailService, SpecificationDetailServiceImpl>();
+            builder.Services.AddScoped<IRoleService, RoleServiceImpl>();
+            builder.Services.AddScoped<IUserService, UserServiceImpl>();
             builder.Services.AddScoped<FileStorageUtil>();
             var app = builder.Build();
 
@@ -39,7 +46,8 @@ namespace Ecommerce
 
 
             app.MapControllers();
-
+            app.UseSwagger();
+            app.UseSwaggerUI();
             app.Run();
         }
     }
