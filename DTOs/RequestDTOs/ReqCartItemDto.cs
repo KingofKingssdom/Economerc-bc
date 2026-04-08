@@ -1,15 +1,13 @@
-﻿namespace Ecommerce.Models
+﻿namespace Ecommerce.DTOs.RequestDTOs
 {
-    public class CartItem
+    public class ReqCartItemDto
     {
-        public long Id { set; get; }
         public long CartId { set; get; }
         public long ProductVariantId { set; get; }
         public double PriceAtTime { set; get; }
         public int Quantity { set; get; }
+ 
         public DateTime CreateAt { set; get; }
-        public Cart Cart { set; get; }
-        public ProductVariant ProductVariant { set; get; }
-
+       
     }
 }

@@ -21,8 +21,8 @@ namespace Ecommerce.Services.Impl
             ProductVariant productVariant = new ProductVariant()
             {
                 Storage = reqProductVariantDto.Storage,
-                PriceOrigin = reqProductVariantDto.PriceOrigin,
-                PriceDiscount = reqProductVariantDto.PriceDiscount,
+                OriginPrice = reqProductVariantDto.OriginPrice,
+                CurrentPrice = reqProductVariantDto.CurrentPrice,
                 ProductId = reqProductVariantDto.ProductId
             };
             await _context.ProductVariants.AddAsync(productVariant);
@@ -31,8 +31,8 @@ namespace Ecommerce.Services.Impl
             {
                 Id = productVariant.Id,
                Storage = productVariant.Storage,
-               PriceOrigin = productVariant.PriceOrigin,
-               PriceDiscount = productVariant.PriceDiscount,
+               OriginPrice = productVariant.OriginPrice,
+               CurrentPrice = productVariant.CurrentPrice,
                 ProductId = productVariant.ProductId
             };
             return resProductVariant;
@@ -49,8 +49,8 @@ namespace Ecommerce.Services.Impl
             {
                 Id = productVariant.Id,
                 Storage = productVariant.Storage,
-                PriceOrigin = productVariant.PriceOrigin,
-                PriceDiscount = productVariant.PriceDiscount,
+                OriginPrice = productVariant.OriginPrice,
+                CurrentPrice = productVariant.CurrentPrice,
                 ProductId = productVariant.ProductId
             };
             return resProductVariant;
@@ -64,8 +64,8 @@ namespace Ecommerce.Services.Impl
             {
                 Id = pv.Id,
                 Storage = pv.Storage,
-                PriceOrigin = pv.PriceOrigin,
-                PriceDiscount = pv.PriceDiscount,
+                OriginPrice = pv.OriginPrice,
+                CurrentPrice = pv.CurrentPrice,
                 ProductId = pv.ProductId
             }).ToList();
             return result;
@@ -80,16 +80,16 @@ namespace Ecommerce.Services.Impl
             }
 
             productVariant.Storage = reqProductVariantDto.Storage;
-            productVariant.PriceOrigin = reqProductVariantDto.PriceOrigin;
-            productVariant.PriceDiscount = productVariant.PriceDiscount;
+            productVariant.OriginPrice = reqProductVariantDto.OriginPrice;
+            productVariant.CurrentPrice = productVariant.CurrentPrice;
             productVariant.ProductId = productVariant.ProductId;
             await _context.SaveChangesAsync();
             ResProductVariantDto resProductVariant = new ResProductVariantDto()
             {
                 Id = productVariant.Id,
                 Storage = productVariant.Storage,
-                PriceOrigin = productVariant.PriceOrigin,
-                PriceDiscount = productVariant.PriceDiscount,
+                OriginPrice = productVariant.OriginPrice,
+                CurrentPrice = productVariant.CurrentPrice,
                 ProductId = productVariant.ProductId
             };
             return resProductVariant;
@@ -108,8 +108,8 @@ namespace Ecommerce.Services.Impl
             {
                 Id = productVariant.Id,
                 Storage = productVariant.Storage,
-                PriceOrigin = productVariant.PriceOrigin,
-                PriceDiscount = productVariant.PriceDiscount,
+                OriginPrice = productVariant.OriginPrice,
+                CurrentPrice = productVariant.OriginPrice,
                 ProductId = productVariant.ProductId
             };
             return resProductVariant;

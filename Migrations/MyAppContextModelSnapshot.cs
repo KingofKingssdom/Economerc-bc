@@ -55,7 +55,12 @@ namespace Ecommerce.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Carts");
                 });
@@ -71,16 +76,10 @@ namespace Ecommerce.Migrations
                     b.Property<long>("CartId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("CategoryCode")
-                        .HasColumnType("bigint");
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<long>("ProductColorId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint");
-
-                    b.Property<double>("ProductPrice")
+                    b.Property<double>("PriceAtTime")
                         .HasColumnType("float");
 
                     b.Property<long>("ProductVariantId")
@@ -89,16 +88,9 @@ namespace Ecommerce.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<double>("TotalPrice")
-                        .HasColumnType("float");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
-
-                    b.HasIndex("ProductColorId");
-
-                    b.HasIndex("ProductId");
 
                     b.HasIndex("ProductVariantId");
 
@@ -332,10 +324,10 @@ namespace Ecommerce.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<double>("PriceDiscount")
+                    b.Property<double>("CurrentPrice")
                         .HasColumnType("float");
 
-                    b.Property<double>("PriceOrigin")
+                    b.Property<double>("OriginPrice")
                         .HasColumnType("float");
 
                     b.Property<long>("ProductColorId")
@@ -455,24 +447,23 @@ namespace Ecommerce.Migrations
                     b.ToTable("UserRoles");
                 });
 
+            modelBuilder.Entity("Ecommerce.Models.Cart", b =>
+                {
+                    b.HasOne("Ecommerce.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Ecommerce.Models.CartItem", b =>
                 {
                     b.HasOne("Ecommerce.Models.Cart", "Cart")
                         .WithMany("CartItem")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Ecommerce.Models.ProductColor", "ProductColor")
-                        .WithMany()
-                        .HasForeignKey("ProductColorId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Ecommerce.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Ecommerce.Models.ProductVariant", "ProductVariant")
@@ -482,10 +473,6 @@ namespace Ecommerce.Migrations
                         .IsRequired();
 
                     b.Navigation("Cart");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("ProductColor");
 
                     b.Navigation("ProductVariant");
                 });

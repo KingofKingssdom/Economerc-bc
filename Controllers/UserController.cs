@@ -62,7 +62,7 @@ namespace Ecommerce.Controllers
 
 
         }
-        [HttpPut("{id}")]
+        [HttpPut("{id}/{roleName}")]
         public async Task<ActionResult<ResUserDto>> Update(long id, ReqUserDto reqUserDto, string roleName)
         {
             try

@@ -3,8 +3,8 @@
     public class ReqProductVariantDto
     {
         public string Storage { set; get; }
-        public double PriceOrigin { set; get; }
-        public double PriceDiscount { set; get; }
+        public double OriginPrice { set; get; }
+        public double CurrentPrice { set; get; }
         public long ProductId { set; get; }
     }
 }

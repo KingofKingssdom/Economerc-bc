@@ -22,17 +22,7 @@ namespace Ecommerce.Data
                 .HasOne(c => c.ProductVariant)
                 .WithMany()
                 .HasForeignKey(c => c.ProductVariantId)
-                .OnDelete(DeleteBehavior.NoAction); 
-            modelBuilder.Entity<CartItem>()
-                .HasOne(c => c.Product)
-                .WithMany()
-                .HasForeignKey(c => c.ProductId)
                 .OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<CartItem>()
-               .HasOne(c => c.ProductColor)
-               .WithMany()
-               .HasForeignKey(c => c.ProductColorId)
-               .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<OrderItem>()
                 .HasOne(c => c.ProductVariant)
                 .WithMany()

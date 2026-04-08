@@ -45,27 +45,22 @@ namespace Ecommerce.Services.Impl
                     throw new Exception("This user already has this role.");
                 }
             }
-            UserRole userRole = new UserRole();
-            if (user.Id == 0)
+            UserRole userRole = new UserRole()
             {
-                userRole.User = user; 
-            }
-            else
+                User = user,
+                RoleId = role.Id
+            };
+            await _context.UserRoles.AddAsync(userRole);
+
+
+
+            if (roleName == "Customer")
             {
                 
-                userRole.UserId = user.Id; 
+                Cart cart = new Cart { User = user };
+                _context.Carts.Add(cart);
+                
             }
-
-            userRole.RoleId = role.Id; 
-            await _context.UserRoles.AddAsync(userRole);
-            // 6. TẠO GIỎ HÀNG (Nếu là khách hàng)
-            //if (roleName == "Customer")
-            //{
-            //    // Giả sử bạn có bảng Cart, hãy khởi tạo nó ở đây
-            //    // Cart cart = new Cart { User = user };
-            //    // _context.Carts.Add(cart);
-            //}
-            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return new ResUserDto()
             {
@@ -123,31 +118,50 @@ namespace Ecommerce.Services.Impl
         }
         public async Task<ResUserDto> UpdateUser(long id, ReqUserDto reqUserDto, string roleName)
         {
+           
             var user = await _context.Users
-                .FirstOrDefaultAsync(u=>u.Id == id);
-            if(user == null)
-            {
-                throw new Exception($"User is id ={id} not found");
-            }
-            var role = await _context.Roles
-                .FirstOrDefaultAsync(r => r.RoleName == roleName);
-            if(role == null)
-            {
-                throw new Exception($"Role name is not found");
-            }
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user == null) throw new Exception($"User with id={id} not found");
+
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == roleName);
+            if (role == null) throw new Exception($"Role name is not found");
+
+            var passwordHash = BCrypt.Net.
+                BCrypt.HashPassword(reqUserDto.Password);
+            user.FullName = reqUserDto.FullName;
+            user.PhoneNumber = reqUserDto.PhoneNumber;
+            user.Email = reqUserDto.Email;
+            user.Password = passwordHash;
+
+
+
             _context.UserRoles.RemoveRange(user.UserRoles);
-            user.UserRoles.Add(new UserRole { UserId = user.Id, RoleId = role.Id });
+
+            
+            user.UserRoles.Add(new UserRole
+            {
+                UserId = user.Id,
+                RoleId = role.Id
+            });
+
             await _context.SaveChangesAsync();
+
+            
             return new ResUserDto()
             {
                 Id = user.Id,
                 FullName = user.FullName,
                 PhoneNumber = user.PhoneNumber,
                 Email = user.Email,
+               
+               
                 ResRoleDtos = user.UserRoles.Select(ur => new ResRoleDto
                 {
                     Id = ur.RoleId,
-                    RoleName = ur.Role.RoleName
+                    RoleName = ur.Role?.RoleName 
                 }).ToList()
             };
         }
