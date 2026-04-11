@@ -31,6 +31,8 @@ namespace Ecommerce
             builder.Services.AddScoped<ISpecificationDetailService, SpecificationDetailServiceImpl>();
             builder.Services.AddScoped<IRoleService, RoleServiceImpl>();
             builder.Services.AddScoped<IUserService, UserServiceImpl>();
+            builder.Services.AddScoped<IOrderService, OrderServiceImpl>();
+            builder.Services.AddScoped<ICartItemService, CartItemServiceImpl>();
             builder.Services.AddScoped<FileStorageUtil>();
             var app = builder.Build();
 
@@ -46,6 +48,7 @@ namespace Ecommerce
 
 
             app.MapControllers();
+            app.UseStaticFiles();
             app.UseSwagger();
             app.UseSwaggerUI();
             app.Run();

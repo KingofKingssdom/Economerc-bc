@@ -3,10 +3,10 @@
     public class Product
     {
         public long Id { set; get; }
-        public string ProductCode { set; get; }
-        public string ProductName { set; get; }
-        public string Description { set; get; }
-        public string UrlImageProduct { set; get; }
+        public required string ProductCode { set; get; }
+        public required string ProductName { set; get; }
+        public string? Description { set; get; }
+        public required string UrlImageProduct { set; get; }
 
         public bool IsFeatured { set; get; }
         public bool IsOnPromotion { set; get; }

@@ -21,7 +21,7 @@ namespace Ecommerce.Services.Impl
             
             var existingBrand = await _context.Brands
                 .Include(b => b.CategoryBrand) 
-                .FirstOrDefaultAsync(b => b.brandCode == reqBrandDto.brandCode);
+                .FirstOrDefaultAsync(b => b.BrandCode == reqBrandDto.BrandCode);
 
             Brand brand;
 
@@ -31,8 +31,8 @@ namespace Ecommerce.Services.Impl
                 string? imagePath = await _fileStorageUtil.UploadImage(reqBrandDto.UrlImageBrand, "Brands");
                 brand = new Brand
                 {
-                    brandCode = reqBrandDto.brandCode,
-                    brandName = reqBrandDto.brandName,
+                    BrandCode = reqBrandDto.BrandCode,
+                    BrandName = reqBrandDto.BrandName,
                     UrlImageBrand = imagePath,
                     CategoryBrand = new List<CategoryBrand>()
                 };
@@ -41,7 +41,7 @@ namespace Ecommerce.Services.Impl
             else
             {
                 brand = existingBrand;
-                brand.brandName = reqBrandDto.brandName;
+                //brand.brandName = reqBrandDto.brandName;
             }
 
             
@@ -50,9 +50,9 @@ namespace Ecommerce.Services.Impl
                 foreach (var categoryId in reqBrandDto.CategoryIds)
                 {
                    
-                    bool alreadyMapped = brand.CategoryBrand.Any(cb => cb.CategoryId == categoryId);
+                    bool alreadyCategoryId = brand.CategoryBrand.Any(cb => cb.CategoryId == categoryId);
 
-                    if (!alreadyMapped)
+                    if (!alreadyCategoryId)
                     {
                         var categoryBrand = new CategoryBrand
                         {
@@ -69,19 +69,20 @@ namespace Ecommerce.Services.Impl
             
             var brandWithDetails = await _context.Brands
                 .Include(b => b.CategoryBrand)
-                    .ThenInclude(cb => cb.Category)
+                .ThenInclude(cb => cb.Category)
                 .FirstOrDefaultAsync(b => b.Id == brand.Id);
 
             return new ResBrandDto
             {
                 Id = brandWithDetails.Id,
-                brandCode = brandWithDetails.brandCode,
-                brandName = brandWithDetails.brandName,
+                BrandCode = brandWithDetails.BrandCode,
+                BrandName = brandWithDetails.BrandName,
                 UrlImageBrand = brandWithDetails.UrlImageBrand,
                 Categories = brandWithDetails.CategoryBrand.Select(c => new ResCategoryDto
                 {
                     Id = c.CategoryId,
-                    CategoryName = c.Category?.CategoryName ?? "N/A"
+                    CategoryCode = c.Category.CategoryCode,
+                    CategoryName = c.Category.CategoryName
                 }).ToList()
             };
         
@@ -93,26 +94,28 @@ namespace Ecommerce.Services.Impl
                                 .Include(b => b.CategoryBrand)           
                                 .ThenInclude(cb => cb.Category)                            
                                 .ToListAsync();
-            var result = brands.Select(brand => new ResBrandDto
+            var resBrand = brands.Select(brand => new ResBrandDto
             {
                 Id = brand.Id,
-                brandCode = brand.brandCode,
-                brandName = brand.brandName,
+                BrandCode = brand.BrandCode,
+                BrandName = brand.BrandName,
                 UrlImageBrand = brand.UrlImageBrand,
                 Categories = brand.CategoryBrand.Select(cb => new ResCategoryDto
                 {
                     Id = cb.CategoryId,
-                    CategoryName = cb.Category.CategoryName,
-                    CategoryCode = cb.Category.CategoryCode
+                    CategoryCode = cb.Category.CategoryCode,
+                    CategoryName = cb.Category.CategoryName
                 }).ToList()
 
             }).ToList();
-            return result;
+            return resBrand;
         }
         public async Task<ResBrandDto> GetBrandByBrandCodeAsync(string brandCode)
         {
-            Brand? brand = await _context.Brands.
-                FirstOrDefaultAsync(b => b.brandCode == brandCode);
+            Brand? brand = await _context.Brands
+                .Include(b=>b.CategoryBrand)
+                .ThenInclude(cb => cb.Category)
+                .FirstOrDefaultAsync(b => b.BrandCode == brandCode);
             if(brand == null)
             {
                 throw new Exception($"Brand with brand code = {brandCode} not found ");
@@ -120,67 +123,75 @@ namespace Ecommerce.Services.Impl
             return new ResBrandDto
             {
                 Id = brand.Id,
-                brandCode = brand.brandCode,
-                brandName = brand.brandName
+                BrandCode = brand.BrandCode,
+                BrandName = brand.BrandName,
+                UrlImageBrand = brand.UrlImageBrand,
+                Categories = brand.CategoryBrand.Select(cb => new ResCategoryDto
+                {
+                    Id = cb.CategoryId,
+                    CategoryCode = cb.Category.CategoryCode,
+                    CategoryName = cb.Category.CategoryName
+                }).ToList()
             };
         }
-            public async Task<ResBrandDto> UpdateBrandAsync(string brandCode, ReqBrandDto reqBrandDto)
+            public async Task<ResBrandDto> UpdateBrandAsync(long id, ReqBrandDto reqBrandDto)
             {
                 Brand? brand = await _context.Brands.
-                    FirstOrDefaultAsync(b => b.brandCode == brandCode);
+                    FirstOrDefaultAsync(b => b.Id == id);
                 if(brand == null)
                 {
-                    throw new Exception($"Brand with brand code = {brandCode} not found");
+                    throw new Exception($"Brand is id = {id} not found");
                 }
                 bool isExist = await _context.Brands.AnyAsync(b => 
-                b.brandCode == reqBrandDto.brandCode && b.Id != brand.Id);
+                b.BrandCode == reqBrandDto.BrandCode && b.Id != brand.Id);
 
                 if (isExist)
                 {
                     throw new Exception($"Brand code already exist");
                 }
-                if (!string.IsNullOrEmpty(reqBrandDto.brandCode))
+                if (!string.IsNullOrEmpty(reqBrandDto.BrandCode))
                 {
-                    brand.brandCode = reqBrandDto.brandCode;
+                    brand.BrandCode = reqBrandDto.BrandCode;
                 }
-                if(!string.IsNullOrEmpty(reqBrandDto.brandName))
+                if(!string.IsNullOrEmpty(reqBrandDto.BrandName))
                 {               
-                    brand.brandName = reqBrandDto.brandName;
+                    brand.BrandName = reqBrandDto.BrandName;
                 }
-                if (reqBrandDto.UrlImageBrand != null && reqBrandDto.UrlImageBrand.Length > 0)
+                string? oldImagePath = brand.UrlImageBrand;
+                string? imagePath = await _fileStorageUtil
+                .UploadImage(reqBrandDto.UrlImageBrand, "Brands");
+                if (imagePath != null)
                 {
-                    string? imagePath = await _fileStorageUtil.UploadImage(reqBrandDto.UrlImageBrand, "Brands");
-                    brand.UrlImageBrand = imagePath;
+                brand.UrlImageBrand = imagePath;
+                _fileStorageUtil.DeleteImage(oldImagePath);
                 }
-           
                 await _context.SaveChangesAsync();
             var updatedBrand = await _context.Brands.AsNoTracking().FirstOrDefaultAsync(b => b.Id == brand.Id);
-            Console.WriteLine($"Gia tri sau khi Save: {brand.UrlImageBrand}");
             return new ResBrandDto
                 {
                     Id = updatedBrand.Id,
-                    brandCode = updatedBrand.brandCode,
-                    brandName = updatedBrand.brandName,
+                    BrandCode = updatedBrand.BrandCode,
+                    BrandName = updatedBrand.BrandName,
                     UrlImageBrand = updatedBrand.UrlImageBrand
                 
                 };
             }
 
-        public async Task<ResBrandDto> DeleteBrandAsync(string brandCode)
+        public async Task<ResBrandDto> DeleteBrandAsync(long id)
         {
             Brand? brand = await _context.Brands.
-                FirstOrDefaultAsync(b => b.brandCode == brandCode);
+                FirstOrDefaultAsync(b => b.Id == id);
             if(brand == null)
             {
-                throw new Exception($"Brand with Id = {brandCode} not found");
+                throw new Exception($"Brand with Id = {id} not found");
             }
             _context.Brands.Remove(brand);
             await _context.SaveChangesAsync();
             return new ResBrandDto
             {
                 Id = brand.Id,
-                brandCode = brand.brandCode,
-                brandName = brand.brandName,
+                BrandCode = brand.BrandCode,
+                BrandName = brand.BrandName,
                 UrlImageBrand = brand.UrlImageBrand
             };
         }

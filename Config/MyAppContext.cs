@@ -28,16 +28,6 @@ namespace Ecommerce.Data
                 .WithMany()
                 .HasForeignKey(c => c.ProductVariantId)
                 .OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<OrderItem>()
-                .HasOne(c => c.Product)
-                .WithMany()
-                .HasForeignKey(c => c.ProductId)
-                .OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<OrderItem>()
-               .HasOne(c => c.ProductColor)
-               .WithMany()
-               .HasForeignKey(c => c.ProductColorId)
-               .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId , ur.RoleId });
             modelBuilder.Entity<SpecificationDetail>()
@@ -61,7 +51,15 @@ namespace Ecommerce.Data
                 .WithMany(u => u.UserRoles)
                 .HasForeignKey(ur => ur.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-
+            modelBuilder.Entity<Order>()
+                .HasIndex(o => o.OrderCode)
+                .IsUnique();
+            modelBuilder.Entity<Category>()
+                .HasIndex(c => c.CategoryCode)
+                .IsUnique();
+            modelBuilder.Entity<Brand>()
+                .HasIndex(b => b.BrandCode)
+                .IsUnique();
 
         }
         public DbSet<Category> Categories { set; get; }

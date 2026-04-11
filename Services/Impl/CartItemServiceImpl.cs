@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.Services.Impl
 {
-    public class CarItemServiceImpl : ICartItemService
+    public class CartItemServiceImpl : ICartItemService
     {
         private readonly MyAppContext _context;
-        public CarItemServiceImpl(MyAppContext context)
+        public CartItemServiceImpl(MyAppContext context)
         {
             _context = context;
         }
@@ -36,20 +36,34 @@ namespace Ecommerce.Services.Impl
             };
                 await _context.CartItems.AddAsync(cartItem);
             
+
             await _context.SaveChangesAsync();
+            var resCartItem = await _context.CartItems
+                .Include(ci => ci.ProductVariant)
+                .ThenInclude(pv => pv.Product)
+                .ThenInclude(pv=> pv.ProductColors)
+                .FirstOrDefaultAsync(ci => ci.Id == cartItem.Id);
+            if (resCartItem == null)
+            {
+                throw new Exception($"Product is not found");
+            }
             return new ResCartItemDto()
             {
-                CartId = cartItem.CartId,
-                ProductVariantId = cartItem.ProductVariantId,
-                PriceAtTime = cartItem.PriceAtTime,
-                Quantity = cartItem.Quantity,
-                CreateAt = cartItem.CreateAt
+                CartId = resCartItem.CartId,
+                ProductVariantId = resCartItem.ProductVariantId,
+                PriceAtTime = resCartItem.PriceAtTime,
+                Quantity = resCartItem.Quantity,
+                CreateAt = resCartItem.CreateAt,
+                ProductName = resCartItem.ProductVariant.Product.ProductName,
+                ProductColor = resCartItem.ProductVariant.ProductColor.ColorName,
+                UrlImageProduct = resCartItem.ProductVariant.ProductColor.UrlProductColor
+
             };
 
         }
         public async Task<List<ResCartItemDto>> GetCartItemByUserId(long userId)
         {
-            Cart cart =  await _context.Carts
+            Cart? cart =  await _context.Carts
                 .FirstOrDefaultAsync(c => c.UserId == userId);
             if(cart == null)
             {
@@ -57,18 +71,23 @@ namespace Ecommerce.Services.Impl
             }
             var cartItems = await _context.CartItems
                 .Where(ci=> ci.Id == cart.Id)
-                .Include(pv=>pv.ProductVariant)
+                .Include(ci=>ci.ProductVariant)
+                .ThenInclude(pv=>pv.Product)
+                .ThenInclude(pv=>pv.ProductColors)
                 .ToListAsync();
 
-            var result = cartItems.Select(ci => new ResCartItemDto { 
+            var resCartItem = cartItems.Select(ci => new ResCartItemDto { 
                 Id = ci.Id,
                 ProductVariantId = ci.ProductVariantId,
                 PriceAtTime = ci.PriceAtTime,
                 Quantity = ci.Quantity,
-                CreateAt = ci.CreateAt
+                CreateAt = ci.CreateAt,
+                ProductName = ci.ProductVariant.Product.ProductName,
+                ProductColor = ci.ProductVariant.ProductColor.ColorName,
+                UrlImageProduct = ci.ProductVariant.ProductColor.UrlProductColor
             
             }).ToList();
-            return result;
+            return resCartItem;
         }
         public async Task<ResCartItemDto> UpdateCartItemByQuantity(long cartItemId, int newQuantity)
         {
@@ -94,13 +113,26 @@ namespace Ecommerce.Services.Impl
 
             }
             await _context.SaveChangesAsync();
+            var resCartItem = await _context.CartItems
+                .Include(ci => ci.ProductVariant)
+                .ThenInclude(pv => pv.Product)
+                .ThenInclude(pv=> pv.ProductColors)
+                .FirstOrDefaultAsync();
+            if(resCartItem == null)
+            {
+                throw new Exception($"Product is not found in Cart");
+            }
             return new ResCartItemDto()
             {
-                CartId = item.CartId,
-                ProductVariantId = item.ProductVariantId,
-                PriceAtTime = item.PriceAtTime,
-                Quantity = item.Quantity,
-                CreateAt = item.CreateAt
+                CartId = resCartItem.CartId,
+                ProductVariantId = resCartItem.ProductVariantId,
+                PriceAtTime = resCartItem.PriceAtTime,
+                Quantity = resCartItem.Quantity,
+                CreateAt = resCartItem.CreateAt,
+                ProductName = resCartItem.ProductVariant.Product.ProductName,
+                ProductColor = resCartItem.ProductVariant.ProductColor.ColorName,
+                UrlImageProduct = resCartItem.ProductVariant.ProductColor.UrlProductColor
+
             };
         }
         public async Task<List<ResCartItemDto>> DeleteCartItemById(List<long> cartItemIds, long userId)
@@ -119,13 +151,16 @@ namespace Ecommerce.Services.Impl
                 .Where(ci => ci.Cart.UserId == userId)
                 .Include(ci => ci.ProductVariant)
                 .ThenInclude(pv => pv.Product)
+                .ThenInclude(pv=>pv.ProductColors)
                 .Select(ci => new ResCartItemDto
                 {
                     Id = ci.Id,
                     ProductVariantId = ci.ProductVariantId,
                     Quantity = ci.Quantity,
                     PriceAtTime = ci.PriceAtTime,
-                    
+                    ProductName = ci.ProductVariant.Product.ProductName,
+                    ProductColor = ci.ProductVariant.ProductColor.ColorName,
+                    UrlImageProduct = ci.ProductVariant.ProductColor.UrlProductColor
                 })
                 .ToListAsync();
 
@@ -170,7 +205,6 @@ namespace Ecommerce.Services.Impl
             {
                 var variant = item.ProductVariant;
 
-                // 1. Kiểm tra sản phẩm còn kinh doanh không
                 if (variant == null)
                 {
                     result.IsValid = false;
@@ -178,7 +212,6 @@ namespace Ecommerce.Services.Impl
                     continue;
                 }
 
-                // 2. Kiểm tra tồn kho
                 if (item.Quantity > variant.Stock)
                 {
                     result.IsValid = false;
@@ -191,8 +224,7 @@ namespace Ecommerce.Services.Impl
                     });
                 }
 
-                // 3. Kiểm tra biến động giá (So sánh giá trong giỏ và giá hiện tại của Variant)
-                // Lưu ý: CurrentPrice là giá sau cùng (đã tính sale) như mình đã bàn ở trên
+               
                 if (item.PriceAtTime != variant.CurrentPrice)
                 {
                     result.IsValid = false;
@@ -204,15 +236,13 @@ namespace Ecommerce.Services.Impl
                         NewPrice = variant.CurrentPrice,
                         Message = $"Giá của '{variant.Product.ProductName}' đã thay đổi."
                     });
-
-                    // Tự động cập nhật lại giá mới vào giỏ hàng để đồng bộ
                     item.PriceAtTime = variant.CurrentPrice;
                 }
             }
 
             if (!result.IsValid)
             {
-                await _context.SaveChangesAsync(); // Lưu lại các cập nhật giá/kho mới nhất vào giỏ
+                await _context.SaveChangesAsync(); 
             }
 
             return result;

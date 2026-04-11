@@ -8,5 +8,6 @@
         public string Email { set; get; }
         public string Password { set; get; }
         public List<UserRole> UserRoles { get; } = [];
+        public List<Order> Orders { get; } = new List<Order>();
     }
 }

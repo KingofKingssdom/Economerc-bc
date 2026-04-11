@@ -19,6 +19,8 @@ namespace Ecommerce.Services.Impl
         public async Task<ResProductDto> CreateProduct(ReqProductDto reqProductDto)
         {
             string? urlImageProduct = await _fileStorageUtil.UploadImage(reqProductDto.UrlImageProduct, "Products");
+            if(urlImageProduct == null) { throw new Exception("Url Image Product null"); }
+
             Product product = new Product()
             {
                 ProductCode = reqProductDto.ProductCode,
@@ -64,7 +66,7 @@ namespace Ecommerce.Services.Impl
                         .ThenInclude(ps=>ps.ProductSpecification)
                         .ToListAsync();
             
-            var result = products.Select(p => new ResProductDto
+            var resProduct = products.Select(p => new ResProductDto
             {
                 Id = p.Id,
                 ProductCode = p.ProductCode,
@@ -82,8 +84,8 @@ namespace Ecommerce.Services.Impl
                 ResBrandDto = new ResBrandDto
                 {
                     Id = p.Brand.Id,
-                    brandCode = p.Brand.brandCode,
-                    brandName = p.Brand.brandName,
+                    BrandCode = p.Brand.BrandCode,
+                    BrandName = p.Brand.BrandName,
                     UrlImageBrand = p.Brand.UrlImageBrand
                 },
                 ResProductSpecification = p.ProductSpecifications
@@ -95,7 +97,7 @@ namespace Ecommerce.Services.Impl
                 }).ToList()
                 
             }).ToList();
-            return result;
+            return resProduct;
                 
         }
         public async Task<ResProductDto> GetByProductCode(string productCode)
@@ -119,8 +121,8 @@ namespace Ecommerce.Services.Impl
                 ResBrandDto = new ResBrandDto
                 {
                     Id = product.Brand.Id,
-                    brandCode = product.Brand.brandCode,
-                    brandName = product.Brand.brandName
+                    BrandCode = product.Brand.BrandCode,
+                    BrandName = product.Brand.BrandName
                 },
                 ResCategory = new ResCategoryDto
                 {
@@ -138,22 +140,17 @@ namespace Ecommerce.Services.Impl
             };
             return ResProduct;
         }
-        public async Task<ResProductDto> UpdateProduct(string productCode, ReqProductDto reqProductDto) {
+        public async Task<ResProductDto> UpdateProduct(long id, ReqProductDto reqProductDto) {
             Product? product = await _context.Products
                 .Include(p=>p.Category)
                 .Include(p=>p.Brand)
                 .Include(ps=>ps.ProductSpecifications)
-                .FirstOrDefaultAsync(p => p.ProductCode == productCode);
+                .FirstOrDefaultAsync(p => p.Id == id);
             if(product == null)
             {
-                throw new Exception($"Not found with product code = {productCode}");
+                throw new Exception($"Product is id ={id} not found");
             }
-            bool isExist = await _context.Products
-                .AnyAsync(p => p.ProductCode == productCode && p.Id != product.Id);
-            if (isExist)
-            {
-                throw new Exception($"Product with productCode = {productCode} already");
-            }
+          
             if(reqProductDto.UrlImageProduct != null)
             {
                 product.UrlImageProduct = await _fileStorageUtil.UploadImage(reqProductDto.UrlImageProduct, "Products");
@@ -187,8 +184,8 @@ namespace Ecommerce.Services.Impl
                 ResBrandDto = new ResBrandDto
                 {
                     Id = product.Brand.Id,
-                    brandCode = product.Brand.brandCode,
-                    brandName = product.Brand.brandName
+                    BrandCode = product.Brand.BrandCode,
+                    BrandName = product.Brand.BrandName
                 },
                 ResCategory = new ResCategoryDto
                 {
@@ -207,15 +204,15 @@ namespace Ecommerce.Services.Impl
             };
             return resProduct;
         }
-        public async Task<ResProductDto> DeleteProduct(string productCode)
+        public async Task<ResProductDto> DeleteProduct(long id)
         {
             Product product = await _context.Products
                 .Include(p=>p.Category)
                 .Include(p=>p.Brand)
-                .FirstOrDefaultAsync(p=> p.ProductCode == productCode);
+                .FirstOrDefaultAsync(p=> p.Id == id);
             if(product == null)
             {
-                throw new Exception($"Product with product code = {productCode} not found");
+                throw new Exception($"Product with product code = {id} not found");
 
             }
             _context.Products.Remove(product);
@@ -232,8 +229,8 @@ namespace Ecommerce.Services.Impl
                 ResBrandDto = new ResBrandDto
                 {
                     Id = product.Brand.Id,
-                    brandCode = product.Brand.brandCode,
-                    brandName = product.Brand.brandName
+                    BrandCode = product.Brand.BrandCode,
+                    BrandName = product.Brand.BrandName
                 },
                 ResCategory = new ResCategoryDto
                 {

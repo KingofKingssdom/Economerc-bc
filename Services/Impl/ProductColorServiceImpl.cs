@@ -73,9 +73,15 @@ namespace Ecommerce.Services.Impl
             {
                 throw new Exception($"Product color with Id = {id} not found");
             }
-            string? urlImageProductColor = await _fileStorageUtil.UploadImage(reqProductColor.UrlProductColor, "ProductColors");
+            string? oldImagePath = productColor.UrlProductColor;
+            string? urlImageProductColor = await _fileStorageUtil
+                .UploadImage(reqProductColor.UrlProductColor, "ProductColors");
+            if (urlImageProductColor != null)
+            {
+                productColor.UrlProductColor = urlImageProductColor;
+                _fileStorageUtil.DeleteImage(oldImagePath);
+            }
             productColor.ColorName = reqProductColor.ColorName;
-            productColor.UrlProductColor = urlImageProductColor;
             productColor.ProductId = reqProductColor.ProductId;
             await _context.SaveChangesAsync();
             ResProductColorDto resProductColor = new ResProductColorDto()

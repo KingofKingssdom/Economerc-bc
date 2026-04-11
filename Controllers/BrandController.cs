@@ -64,12 +64,12 @@ namespace Ecommerce.Controllers
             
             
         }
-        [HttpPut("{brandCode}")]
-        public async Task<ActionResult<ResBrandDto>> Update(string brandCode, ReqBrandDto reqBrandDto)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ResBrandDto>> Update(long id, ReqBrandDto reqBrandDto)
         {
             try
             {
-                var resBrandDto = await _brandService.UpdateBrandAsync(brandCode,reqBrandDto);
+                var resBrandDto = await _brandService.UpdateBrandAsync(id,reqBrandDto);
                 return Ok(new
                 {
                     message = "Update data successfully",
@@ -81,12 +81,12 @@ namespace Ecommerce.Controllers
                return NotFound(new { message = ex.Message });
             }
         }
-        [HttpDelete("{brandCode}")]
-        public async Task<ActionResult<ResBrandDto>> Delete(string brandCode)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ResBrandDto>> Delete(long id)
         {
             try
             {
-                var resBrandDto = await _brandService.DeleteBrandAsync(brandCode);
+                var resBrandDto = await _brandService.DeleteBrandAsync(id);
                 return Ok(new
                 {
                     message = "Delete success",

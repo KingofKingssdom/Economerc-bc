@@ -41,10 +41,10 @@ namespace Ecommerce.Controllers
             });
 
         }
-        [HttpPut("{productCode}")]
-        public async Task<ActionResult<ResProductDto>> Update(string productCode, ReqProductDto reqProductDto)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ResProductDto>> Update(long id, ReqProductDto reqProductDto)
         {
-            var product = await _productService.UpdateProduct(productCode, reqProductDto);
+            var product = await _productService.UpdateProduct(id, reqProductDto);
             try
             {
                 return Ok(new
@@ -57,10 +57,10 @@ namespace Ecommerce.Controllers
                 return BadRequest(new { ex.Message });
             }
         }
-        [HttpDelete("{productCode}")]
-        public async Task<ActionResult<ResProductDto>> Delete(string productCode)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ResProductDto>> Delete(long id)
         {
-            var product = await _productService.DeleteProduct(productCode);
+            var product = await _productService.DeleteProduct(id);
             try
             {
                 return Ok(new

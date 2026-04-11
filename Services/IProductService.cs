@@ -8,8 +8,8 @@ namespace Ecommerce.Services
         public Task<ResProductDto> CreateProduct(ReqProductDto reqProductDto);
         public Task<List<ResProductDto>> GetAllProduct();
         public Task<ResProductDto> GetByProductCode(string productCode);
-        public Task<ResProductDto> UpdateProduct(string productCode, ReqProductDto reqProductDto);
-        public Task<ResProductDto> DeleteProduct(string productCode);
+        public Task<ResProductDto> UpdateProduct(long id, ReqProductDto reqProductDto);
+        public Task<ResProductDto> DeleteProduct(long id);
 
     }
 }

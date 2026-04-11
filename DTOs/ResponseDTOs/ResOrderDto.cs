@@ -1,8 +1,9 @@
-﻿using Ecommerce.Responses.Enum;
+﻿using Ecommerce.Models;
+using Ecommerce.Responses.Enum;
 
-namespace Ecommerce.Models
+namespace Ecommerce.DTOs.ResponseDTOs
 {
-    public class Order
+    public class ResOrderDto
     {
         public long Id { set; get; }
         public string OrderCode { set; get; }
@@ -16,6 +17,6 @@ namespace Ecommerce.Models
         public string ReceiverName { set; get; }
         public string ReceiverPhone { set; get; }
         public string ShippingAddress { set; get; }
-        public List<OrderItem> OrderItems { get; } = new List<OrderItem>();
+        public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }

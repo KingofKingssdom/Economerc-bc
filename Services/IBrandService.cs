@@ -8,9 +8,9 @@ namespace Ecommerce.Services
         public Task<ResBrandDto> CreateBrandAsync(ReqBrandDto reqBrandDto);
         public Task<List<ResBrandDto>> GetAllBrandAsync();
         public Task<ResBrandDto> GetBrandByBrandCodeAsync(string brandCode);
-        public Task<ResBrandDto> UpdateBrandAsync(string brandCode, ReqBrandDto reqBrandDto);
+        public Task<ResBrandDto> UpdateBrandAsync(long id, ReqBrandDto reqBrandDto);
 
-        public Task<ResBrandDto> DeleteBrandAsync(string brandCode);
+        public Task<ResBrandDto> DeleteBrandAsync(long id);
 
     }
 }

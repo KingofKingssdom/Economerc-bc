@@ -30,19 +30,22 @@ namespace Ecommerce.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("BrandCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BrandName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UrlImageBrand")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("brandCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("brandName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("BrandCode")
+                        .IsUnique();
 
                     b.ToTable("Brands");
                 });
@@ -147,9 +150,9 @@ namespace Ecommerce.Migrations
                     b.Property<DateTime>("DayCreate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("OrderName")
+                    b.Property<string>("OrderCode")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("OrderStatus")
                         .HasColumnType("int");
@@ -160,10 +163,30 @@ namespace Ecommerce.Migrations
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("int");
 
+                    b.Property<string>("ReceiverName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverPhone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShippingAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("TotalPrice")
                         .HasColumnType("float");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("OrderCode")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Orders");
                 });
@@ -176,20 +199,14 @@ namespace Ecommerce.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("CategoryCode")
-                        .HasColumnType("bigint");
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint");
 
-                    b.Property<double>("PriceBuy")
+                    b.Property<double>("PriceAtTime")
                         .HasColumnType("float");
-
-                    b.Property<long>("ProductColorId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint");
 
                     b.Property<long>("ProductVariantId")
                         .HasColumnType("bigint");
@@ -200,10 +217,6 @@ namespace Ecommerce.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductColorId");
-
-                    b.HasIndex("ProductId");
 
                     b.HasIndex("ProductVariantId");
 
@@ -225,7 +238,6 @@ namespace Ecommerce.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsFeatured")
@@ -496,24 +508,23 @@ namespace Ecommerce.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Ecommerce.Models.Order", b =>
+                {
+                    b.HasOne("Ecommerce.Models.User", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Ecommerce.Models.OrderItem", b =>
                 {
                     b.HasOne("Ecommerce.Models.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Ecommerce.Models.ProductColor", "ProductColor")
-                        .WithMany()
-                        .HasForeignKey("ProductColorId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Ecommerce.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Ecommerce.Models.ProductVariant", "ProductVariant")
@@ -523,10 +534,6 @@ namespace Ecommerce.Migrations
                         .IsRequired();
 
                     b.Navigation("Order");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("ProductColor");
 
                     b.Navigation("ProductVariant");
                 });
@@ -687,6 +694,8 @@ namespace Ecommerce.Migrations
 
             modelBuilder.Entity("Ecommerce.Models.User", b =>
                 {
+                    b.Navigation("Orders");
+
                     b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618

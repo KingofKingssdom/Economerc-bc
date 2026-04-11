@@ -15,6 +15,7 @@ namespace Ecommerce.Services.Impl
             _context = context;
         }
        public async Task<ResCategoryDto> CreateCategoryAsync(ReqCategoryDto reqCategoryDto) {
+         
             Category category = new Category
             {
                 CategoryCode = reqCategoryDto.CategoryCode,
@@ -25,7 +26,7 @@ namespace Ecommerce.Services.Impl
                 .AnyAsync(c => c.CategoryCode == reqCategoryDto.CategoryCode);
             if (isExist)
             {
-                throw new Exception("Category code already exists");
+                throw new Exception("Category code already exist");
             }
             await _context.Categories.AddAsync(category);     
             await _context.SaveChangesAsync();
@@ -38,10 +39,11 @@ namespace Ecommerce.Services.Impl
             };
         }
        public async Task<ResCategoryDto?> UpdateCategoryAsync(long id, ReqCategoryDto reqCategoryDto) {
-            Category? category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            Category? category = await _context.Categories
+                .FirstOrDefaultAsync(c => c.Id == id);
             if (category == null)
             {
-                return null;
+                throw new Exception($"Category is not found");
             }
             bool isExist = await _context.Categories
                 .AnyAsync(c => c.CategoryCode == reqCategoryDto.CategoryCode && c.Id != id);
@@ -63,10 +65,11 @@ namespace Ecommerce.Services.Impl
 
         }
         public async Task<ResCategoryDto?> GetCategoryByIdAsync(long id) {
-            Category? category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            Category? category = await _context.Categories
+                .FirstOrDefaultAsync(c => c.Id == id);
             if(category == null)
             {
-                return null;
+                throw new Exception($"Category is not found");
             }
             return new ResCategoryDto
             {
@@ -77,14 +80,14 @@ namespace Ecommerce.Services.Impl
         }
         public async Task<List<ResCategoryDto>> GetAllCategoryAsync() {
             List<Category> categories = await _context.Categories.ToListAsync();
-            var result = categories.Select(caterogy => new ResCategoryDto
+            var resCategory = categories.Select(caterogy => new ResCategoryDto
             {
                 Id = caterogy.Id,
                 CategoryCode = caterogy.CategoryCode,
                 CategoryName = caterogy.CategoryName
             }).ToList();
             
-            return result;
+            return resCategory;
         }
         public async Task<ResCategoryDto> DeleteCategoryAsync(long id) {
 

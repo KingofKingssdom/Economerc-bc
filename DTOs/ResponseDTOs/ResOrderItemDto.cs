@@ -1,8 +1,9 @@
-﻿namespace Ecommerce.Models
+﻿using Ecommerce.Models;
+
+namespace Ecommerce.DTOs.ResponseDTOs
 {
-    public class OrderItem
+    public class ResOrderItemDto
     {
-        public long Id { set; get; }
         public long OrderId { set; get; }
         public long ProductVariantId { set; get; }
         public double PriceAtTime { set; get; }

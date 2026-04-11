@@ -30,5 +30,17 @@ namespace Ecommerce.Util
             }
             return Path.Combine("Images", folderName, fullFileName).Replace("\\", "/");
         }
+
+        public void DeleteImage(string? relativePath)
+        {
+            if (string.IsNullOrEmpty(relativePath)) return;
+
+            string fullPath = Path.Combine(_environment.WebRootPath, relativePath.TrimStart('/'));
+
+            if (File.Exists(fullPath))
+            {
+                File.Delete(fullPath);
+            }
+        }
     }
 }

@@ -1,21 +1,20 @@
-﻿using Ecommerce.Responses.Enum;
+﻿using Ecommerce.Models;
+using Ecommerce.Responses.Enum;
 
-namespace Ecommerce.Models
+namespace Ecommerce.DTOs.RequestDTOs
 {
-    public class Order
+    public class ReqOrderDto
     {
-        public long Id { set; get; }
         public string OrderCode { set; get; }
         public OrderStatus OrderStatus { set; get; }
         public PaymentStatus PaymentStatus { set; get; }
         public PaymentMethod PaymentMethod { set; get; }
         public DateTime DayCreate { set; get; }
         public double TotalPrice { set; get; }
-        public long UserId { set; get; }
-        public User User { set; get; } = null!;
         public string ReceiverName { set; get; }
         public string ReceiverPhone { set; get; }
         public string ShippingAddress { set; get; }
+        public List<ReqCartItemDto> ReqCartItemDtos { set; get; } = new List<ReqCartItemDto>();
         public List<OrderItem> OrderItems { get; } = new List<OrderItem>();
     }
 }
