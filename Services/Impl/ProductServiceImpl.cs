@@ -33,26 +33,39 @@ namespace Ecommerce.Services.Impl
                 CategoryId = reqProductDto.CategoryId
             
             };
-            foreach (var productSpecificationId in reqProductDto.ProductSpecificationId)
-            {
-                product.ProductSpecifications.Add(new ProductSpecificationMapping
-                {
-                    ProductSpecificationId = productSpecificationId
-                });
-            }
+            //foreach (var productSpecificationId in reqProductDto.ProductSpecificationId)
+            //{
+            //    product.ProductSpecifications.Add(new ProductSpecificationMapping
+            //    {
+            //        ProductSpecificationId = productSpecificationId
+            //    });
+            //}
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
+            var resProduct = await _context.Products
+                .Include(p => p.Brand)
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync();
             return new ResProductDto
             {
-                Id = product.Id,
-                ProductCode = product.ProductCode,
-                ProductName = product.ProductName,
-                Description = product.Description,
-                UrlImageProduct = product.UrlImageProduct,
-                IsFeatured = product.IsFeatured,
-                IsOnPromotion = product.IsOnPromotion,
-                BrandId = product.BrandId,
-                CategoryId = product.CategoryId
+                Id = resProduct.Id,
+                ProductCode = resProduct.ProductCode,
+                ProductName = resProduct.ProductName,
+                Description = resProduct.Description,
+                UrlImageProduct = resProduct.UrlImageProduct,
+                IsFeatured = resProduct.IsFeatured,
+                IsOnPromotion = resProduct.IsOnPromotion,
+                ResBrandDto = new ResBrandDto()
+                {
+                    BrandCode = resProduct.Brand.BrandCode,
+                    BrandName = resProduct.Brand.BrandName
+                },
+                ResCategory = new ResCategoryDto()
+                {
+                    CategoryCode = resProduct.Category.CategoryCode,
+                    CategoryName = resProduct.Category.CategoryName
+                }
+
             };
 
             

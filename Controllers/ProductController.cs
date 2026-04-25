@@ -41,6 +41,22 @@ namespace Ecommerce.Controllers
             });
 
         }
+        [HttpGet("{productCode}")]
+        public async Task<ActionResult<ResProductDto>> GetByProductCode(string productCode)
+        {
+            try {
+                var product = await _productService.GetByProductCode(productCode);
+                return Ok(new
+                {
+                    message = "Get success!",
+                    data = product
+                });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { ex.Message });
+            }
+        }
         [HttpPut("{id}")]
         public async Task<ActionResult<ResProductDto>> Update(long id, ReqProductDto reqProductDto)
         {

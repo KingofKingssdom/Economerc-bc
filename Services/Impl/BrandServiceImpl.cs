@@ -20,7 +20,7 @@ namespace Ecommerce.Services.Impl
         {
             
             var existingBrand = await _context.Brands
-                .Include(b => b.CategoryBrand) 
+                .Include(b => b.CategoryBrand)
                 .FirstOrDefaultAsync(b => b.BrandCode == reqBrandDto.BrandCode);
 
             Brand brand;

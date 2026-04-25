@@ -1,12 +1,14 @@
 ﻿using Ecommerce.DTOs.RequestDTOs;
 using Ecommerce.DTOs.ResponseDTOs;
 using Ecommerce.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Controllers
 {
     [ApiController]
     [Route("api/brand")]
+    [Authorize(Roles ="Admin")]
     public class BrandController: ControllerBase
     {
         private readonly IBrandService _brandService;

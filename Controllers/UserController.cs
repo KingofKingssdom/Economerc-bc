@@ -1,6 +1,7 @@
 ﻿using Ecommerce.DTOs.RequestDTOs;
 using Ecommerce.DTOs.ResponseDTOs;
 using Ecommerce.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Controllers
@@ -14,7 +15,7 @@ namespace Ecommerce.Controllers
         {
             _userService = userService;
         }
-        [HttpPost("{roleName}")]
+        [HttpPost("register/{roleName}")]
         public async Task<ActionResult<ResUserDto>> Create(ReqUserDto reqUserDto, string roleName)
         {
             try
@@ -34,6 +35,7 @@ namespace Ecommerce.Controllers
 
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResUserDto>> GetAll()
         {
             var user = await _userService.GetAllUser();
@@ -44,6 +46,7 @@ namespace Ecommerce.Controllers
             });
         }
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResUserDto>> GetById(long id)
         {
             try
@@ -63,6 +66,7 @@ namespace Ecommerce.Controllers
 
         }
         [HttpPut("{id}/{roleName}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResUserDto>> Update(long id, ReqUserDto reqUserDto, string roleName)
         {
             try
@@ -81,6 +85,7 @@ namespace Ecommerce.Controllers
 
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResUserDto>> Delete(long id)
         {
             try

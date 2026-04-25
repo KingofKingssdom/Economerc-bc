@@ -78,5 +78,6 @@ namespace Ecommerce.Data
         public DbSet<User> Users { set; get; }
         public DbSet<UserRole> UserRoles { set; get; }
         public DbSet<Role> Roles { set; get; }
+        public DbSet<UserToken> UserTokens { set; get; }
     }
 }

@@ -2,6 +2,7 @@
 using Ecommerce.DTOs.ResponseDTOs;
 using Ecommerce.Models;
 using Ecommerce.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Controllers
@@ -16,6 +17,7 @@ namespace Ecommerce.Controllers
             _categoryService = categoryService;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResCategoryDto>> Create(ReqCategoryDto reqCatgoryDto)
         {
             try
@@ -56,6 +58,7 @@ namespace Ecommerce.Controllers
             return Ok(resCategoryDto);
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResCategoryDto>> Update(long id, ReqCategoryDto reqCategoryDto)
         {
             try
@@ -74,6 +77,7 @@ namespace Ecommerce.Controllers
            
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResCategoryDto>> Delete(long id)
         {
             try

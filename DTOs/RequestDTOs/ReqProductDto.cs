@@ -12,7 +12,7 @@ namespace Ecommerce.DTOs.RequestDTOs
         public bool IsOnPromotion { set; get; }
         public long BrandId { set; get; }
         public long CategoryId { set; get; }
-        public required List<long> ProductSpecificationId { set; get; }
+        public List<long>? ProductSpecificationId { set; get; }
 
 
     }

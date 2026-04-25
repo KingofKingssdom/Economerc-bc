@@ -1,13 +1,14 @@
 ﻿using Ecommerce.DTOs.RequestDTOs;
 using Ecommerce.DTOs.ResponseDTOs;
 using Ecommerce.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Controllers
 {
     [ApiController]
     [Route("api/specificationDetail")]
-    public class SpecificationDetailController:ControllerBase
+    public class SpecificationDetailController : ControllerBase
     {
         private readonly ISpecificationDetailService _specificationDetailService;
         public SpecificationDetailController(ISpecificationDetailService specificationService)
@@ -15,9 +16,10 @@ namespace Ecommerce.Controllers
             _specificationDetailService = specificationService;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResSpecificationDetailDto>> Create(List<ReqSpecificationDetailDto> reqSpecificationDetailDto)
         {
-            var specificationDetail = await _specificationDetailService.CreateSpecificationDetail (reqSpecificationDetailDto);
+            var specificationDetail = await _specificationDetailService.CreateSpecificationDetail(reqSpecificationDetailDto);
             return Ok(new
             {
                 message = "Create success",
@@ -25,6 +27,7 @@ namespace Ecommerce.Controllers
             });
         }
         [HttpGet]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<ResSpecificationDetailDto>> GetAll()
         {
             var specificationDetail = await _specificationDetailService.GetAllSpecificationDetail();
@@ -54,6 +57,7 @@ namespace Ecommerce.Controllers
 
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResSpecificationDetailDto>> Update(long productId,long productSpecificationId, ReqSpecificationDetailDto reqSpecificationDetail)
         {
             try
@@ -72,6 +76,7 @@ namespace Ecommerce.Controllers
 
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResSpecificationDetailDto>> Delete(long id)
         {
             try
