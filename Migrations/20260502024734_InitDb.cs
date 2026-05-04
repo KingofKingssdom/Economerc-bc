@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Ecommerce.Migrations
 {
     /// <inheritdoc />
-    public partial class InitDB : Migration
+    public partial class InitDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -181,8 +181,7 @@ namespace Ecommerce.Migrations
                         name: "FK_Orders_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -210,22 +209,26 @@ namespace Ecommerce.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductColors",
+                name: "UserTokens",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UrlProductColor = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ColorName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProductId = table.Column<long>(type: "bigint", nullable: false)
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false),
+                    AddedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Jti = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductColors", x => x.Id);
+                    table.PrimaryKey("PK_UserTokens", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductColors_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
+                        name: "FK_UserTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -248,6 +251,31 @@ namespace Ecommerce.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ProductSpecificationMappings_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductVariants",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Storage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OriginPrice = table.Column<double>(type: "float", nullable: false),
+                    CurrentPrice = table.Column<double>(type: "float", nullable: false),
+                    Stock = table.Column<int>(type: "int", nullable: false),
+                    UrlProductColor = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ColorName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProductId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductVariants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductVariants_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
@@ -282,36 +310,6 @@ namespace Ecommerce.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductVariants",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Storage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OriginPrice = table.Column<double>(type: "float", nullable: false),
-                    CurrentPrice = table.Column<double>(type: "float", nullable: false),
-                    ProductId = table.Column<long>(type: "bigint", nullable: false),
-                    ProductColorId = table.Column<long>(type: "bigint", nullable: false),
-                    Stock = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductVariants", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProductVariants_ProductColors_ProductColorId",
-                        column: x => x.ProductColorId,
-                        principalTable: "ProductColors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProductVariants_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CartItems",
                 columns: table => new
                 {
@@ -330,8 +328,7 @@ namespace Ecommerce.Migrations
                         name: "FK_CartItems_Carts_CartId",
                         column: x => x.CartId,
                         principalTable: "Carts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_CartItems_ProductVariants_ProductVariantId",
                         column: x => x.ProductVariantId,
@@ -421,11 +418,6 @@ namespace Ecommerce.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductColors_ProductId",
-                table: "ProductColors",
-                column: "ProductId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Products_BrandId",
                 table: "Products",
                 column: "BrandId");
@@ -445,11 +437,6 @@ namespace Ecommerce.Migrations
                 name: "IX_ProductSpecificationMappings_ProductSpecificationId",
                 table: "ProductSpecificationMappings",
                 column: "ProductSpecificationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductVariants_ProductColorId",
-                table: "ProductVariants",
-                column: "ProductColorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductVariants_ProductId",
@@ -476,6 +463,11 @@ namespace Ecommerce.Migrations
                 table: "Users",
                 columns: new[] { "Email", "PhoneNumber" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserTokens_UserId",
+                table: "UserTokens",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -500,6 +492,9 @@ namespace Ecommerce.Migrations
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
+                name: "UserTokens");
+
+            migrationBuilder.DropTable(
                 name: "Carts");
 
             migrationBuilder.DropTable(
@@ -516,9 +511,6 @@ namespace Ecommerce.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "ProductColors");
 
             migrationBuilder.DropTable(
                 name: "Products");

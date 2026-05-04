@@ -16,33 +16,46 @@ namespace Ecommerce.Services.Impl
         }
         public async Task<ResCartItemDto> CreateCartItem(ReqCartItemDto reqCartItemDto)
         {
+            var productVariant = await _context.ProductVariants
+                .FirstOrDefaultAsync(pv => pv.Id == reqCartItemDto.ProductVariantId);
+            if (productVariant == null)
+            {
+                throw new Exception($"Không tìm thấy biến thể sản phẩm với ID: {reqCartItemDto.ProductVariantId}");
+            }
+            var priceCurrent = productVariant.CurrentPrice;
             var existingItem = await _context.CartItems
                 .FirstOrDefaultAsync(ci => ci.CartId == reqCartItemDto.CartId
                                        && ci.ProductVariantId == reqCartItemDto.ProductVariantId);
-            if(existingItem != null)
+
+            CartItem itemToReturn;
+            if (existingItem != null)
             {
                 existingItem.Quantity += reqCartItemDto.Quantity;
-                existingItem.PriceAtTime = reqCartItemDto.PriceAtTime;
+                existingItem.PriceAtTime = priceCurrent;
                 _context.CartItems.Update(existingItem);
+                itemToReturn = existingItem;
             }
-
-            CartItem cartItem = new CartItem()
+            else
             {
-                CartId = reqCartItemDto.CartId,
-                ProductVariantId = reqCartItemDto.ProductVariantId,
-                PriceAtTime = reqCartItemDto.PriceAtTime,
-                Quantity = reqCartItemDto.Quantity,
-                CreateAt = DateTime.Now
-            };
+                var cartItem = new CartItem()
+                {
+                    CartId = reqCartItemDto.CartId,
+                    ProductVariantId = reqCartItemDto.ProductVariantId,
+                    PriceAtTime = priceCurrent,
+                    Quantity = reqCartItemDto.Quantity,
+                    CreateAt = DateTime.Now,
+                    TotalPrice = priceCurrent * reqCartItemDto.Quantity
+                };
+                 
                 await _context.CartItems.AddAsync(cartItem);
-            
-
+                itemToReturn = cartItem;
+            }
+           
             await _context.SaveChangesAsync();
             var resCartItem = await _context.CartItems
                 .Include(ci => ci.ProductVariant)
                 .ThenInclude(pv => pv.Product)
-                .ThenInclude(pv=> pv.ProductColors)
-                .FirstOrDefaultAsync(ci => ci.Id == cartItem.Id);
+                .FirstOrDefaultAsync(ci => ci.Id == itemToReturn.Id);
             if (resCartItem == null)
             {
                 throw new Exception($"Product is not found");
@@ -54,9 +67,7 @@ namespace Ecommerce.Services.Impl
                 PriceAtTime = resCartItem.PriceAtTime,
                 Quantity = resCartItem.Quantity,
                 CreateAt = resCartItem.CreateAt,
-                ProductName = resCartItem.ProductVariant.Product.ProductName,
-                ProductColor = resCartItem.ProductVariant.ProductColor.ColorName,
-                UrlImageProduct = resCartItem.ProductVariant.ProductColor.UrlProductColor
+                ProductName = resCartItem.ProductVariant.Product.ProductName
 
             };
 
@@ -70,22 +81,23 @@ namespace Ecommerce.Services.Impl
                 throw new Exception($"Cart is user id ={userId} not found");
             }
             var cartItems = await _context.CartItems
-                .Where(ci=> ci.Id == cart.Id)
+                .Where(ci=> ci.CartId == cart.Id)
                 .Include(ci=>ci.ProductVariant)
                 .ThenInclude(pv=>pv.Product)
-                .ThenInclude(pv=>pv.ProductColors)
                 .ToListAsync();
 
-            var resCartItem = cartItems.Select(ci => new ResCartItemDto { 
+            var resCartItem = cartItems.Select(ci => new ResCartItemDto {
                 Id = ci.Id,
                 ProductVariantId = ci.ProductVariantId,
                 PriceAtTime = ci.PriceAtTime,
                 Quantity = ci.Quantity,
                 CreateAt = ci.CreateAt,
                 ProductName = ci.ProductVariant.Product.ProductName,
-                ProductColor = ci.ProductVariant.ProductColor.ColorName,
-                UrlImageProduct = ci.ProductVariant.ProductColor.UrlProductColor
-            
+                UrlProductColor = ci.ProductVariant.UrlProductColor,
+                ColorName = ci.ProductVariant.ColorName,
+                TotalPrice = ci.TotalPrice,
+                Storage = ci.ProductVariant.Storage
+
             }).ToList();
             return resCartItem;
         }
@@ -116,7 +128,6 @@ namespace Ecommerce.Services.Impl
             var resCartItem = await _context.CartItems
                 .Include(ci => ci.ProductVariant)
                 .ThenInclude(pv => pv.Product)
-                .ThenInclude(pv=> pv.ProductColors)
                 .FirstOrDefaultAsync();
             if(resCartItem == null)
             {
@@ -129,9 +140,7 @@ namespace Ecommerce.Services.Impl
                 PriceAtTime = resCartItem.PriceAtTime,
                 Quantity = resCartItem.Quantity,
                 CreateAt = resCartItem.CreateAt,
-                ProductName = resCartItem.ProductVariant.Product.ProductName,
-                ProductColor = resCartItem.ProductVariant.ProductColor.ColorName,
-                UrlImageProduct = resCartItem.ProductVariant.ProductColor.UrlProductColor
+                ProductName = resCartItem.ProductVariant.Product.ProductName
 
             };
         }
@@ -151,16 +160,13 @@ namespace Ecommerce.Services.Impl
                 .Where(ci => ci.Cart.UserId == userId)
                 .Include(ci => ci.ProductVariant)
                 .ThenInclude(pv => pv.Product)
-                .ThenInclude(pv=>pv.ProductColors)
                 .Select(ci => new ResCartItemDto
                 {
                     Id = ci.Id,
                     ProductVariantId = ci.ProductVariantId,
                     Quantity = ci.Quantity,
                     PriceAtTime = ci.PriceAtTime,
-                    ProductName = ci.ProductVariant.Product.ProductName,
-                    ProductColor = ci.ProductVariant.ProductColor.ColorName,
-                    UrlImageProduct = ci.ProductVariant.ProductColor.UrlProductColor
+                    ProductName = ci.ProductVariant.Product.ProductName
                 })
                 .ToListAsync();
 

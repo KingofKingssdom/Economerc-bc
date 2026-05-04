@@ -195,5 +195,28 @@ namespace Ecommerce.Services.Impl
                 UrlImageBrand = brand.UrlImageBrand
             };
         }
+        public async Task<List<ResBrandDto>> GetAllBrandByCategoryId(long categoryId)
+        {
+            var brands = await _context.Brands
+                .Include(b => b.CategoryBrand)
+                .ThenInclude(cb => cb.Category)
+                .Where(b => b.CategoryBrand.Any(cb => cb.CategoryId == categoryId))
+                .ToListAsync();
+            var resBrand = brands.Select(brand => new ResBrandDto
+            {
+                Id = brand.Id,
+                BrandCode = brand.BrandCode,
+                BrandName = brand.BrandName,
+                UrlImageBrand = brand.UrlImageBrand,
+                //Categories = brand.CategoryBrand.Select(cb => new ResCategoryDto
+                //{
+                //    Id = cb.CategoryId,
+                //    CategoryCode = cb.Category.CategoryCode,
+                //    CategoryName = cb.Category.CategoryName
+                //}).ToList()
+
+            }).ToList();
+            return resBrand;
+        }
     }
 }

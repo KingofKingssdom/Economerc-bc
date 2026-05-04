@@ -104,17 +104,23 @@ namespace Ecommerce.Services.Impl
         }
         private string GenerateToken(ResUserDto resUserDto, out string jti)
         {
-            var user = _context.Users.Include(u => u.UserRoles)
+            var user = _context.Users
+                .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .FirstOrDefault(u => u.Email == resUserDto.Email);
             var RoleName = user.UserRoles.Select(ur => ur.Role.RoleName).ToList();
+            var cartId =  _context.Carts.FirstOrDefault(c => c.UserId == user.Id);
+            string finalCartId = cartId.Id.ToString();
             jti = Guid.NewGuid().ToString();
             var jwtSettings = _configuration.GetSection("Jwt");
             var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, resUserDto.Email),
-                new Claim(ClaimTypes.GivenName, resUserDto.FullName),
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(ClaimTypes.GivenName, user.FullName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim("cartId",finalCartId),
                 new Claim(JwtRegisteredClaimNames.Jti, jti)
              };
 

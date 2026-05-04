@@ -6,11 +6,11 @@
         public string Storage { set; get; }
         public double OriginPrice { set; get; }
         public double CurrentPrice { set; get; }
+        public int Stock { set; get; }
+        public string UrlProductColor { set; get; }
+        public string ColorName { set; get; }
         public long ProductId { set; get; }
         public Product Product { set; get; } = null!;
-        public long ProductColorId { set; get; }
-        public ProductColor ProductColor { set; get; }
-        public int Stock { set; get; }
 
     }
 }

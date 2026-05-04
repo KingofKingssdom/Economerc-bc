@@ -3,6 +3,7 @@ using Ecommerce.DTOs.ResponseDTOs;
 using Ecommerce.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Ecommerce.Controllers
 {
@@ -102,6 +103,26 @@ namespace Ecommerce.Controllers
                 return NotFound(new { ex.Message });
             }
 
+        }
+        [Authorize] 
+        [HttpGet("me")]
+        public IActionResult GetCurrentUser()
+        {
+ 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var email = User.FindFirstValue(ClaimTypes.Name);
+            var fullName = User.FindFirstValue(ClaimTypes.GivenName);
+            var cartId = User.FindFirstValue("cartId");
+
+            if (userId == null) return Unauthorized();
+
+            return Ok(new
+            {
+                Id = userId,
+                Email = email,
+                FullName = fullName,
+                CartId = cartId
+            });
         }
     }
 }

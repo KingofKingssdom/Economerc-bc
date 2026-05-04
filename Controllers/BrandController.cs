@@ -8,7 +8,7 @@ namespace Ecommerce.Controllers
 {
     [ApiController]
     [Route("api/brand")]
-    [Authorize(Roles ="Admin")]
+    //[Authorize(Roles ="Admin")]
     public class BrandController: ControllerBase
     {
         private readonly IBrandService _brandService;
@@ -65,6 +65,25 @@ namespace Ecommerce.Controllers
             }
             
             
+        }
+        [HttpGet("categoryId/{categoryId}")]
+        public async Task<ActionResult<ResBrandDto>> GetAllByCategoryId(long categoryId)
+        {
+            try
+            {
+                var resBrandDto = await _brandService.GetAllBrandByCategoryId(categoryId);
+                return Ok(new
+                {
+                    message = "Get data successfully",
+                    data = resBrandDto
+                });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+
+
         }
         [HttpPut("{id}")]
         public async Task<ActionResult<ResBrandDto>> Update(long id, ReqBrandDto reqBrandDto)

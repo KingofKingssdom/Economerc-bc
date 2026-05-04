@@ -11,5 +11,10 @@ namespace Ecommerce.DTOs.ResponseDTOs
         public DateTime CreateAt { set; get; }
         public Order Order { set; get; }
         public ProductVariant ProductVariant { set; get; }
+        public required string ProductName { set; get; }
+        public string UrlProductColor { set; get; }
+        public string ColorName { set; get; }
+        public double TotalPrice { set; get; }
+        public string Storage { set; get; }
     }
 }

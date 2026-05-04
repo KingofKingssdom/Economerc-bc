@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce.Migrations
 {
     [DbContext(typeof(MyAppContext))]
-    [Migration("20260425075131_InitUserToken")]
-    partial class InitUserToken
+    [Migration("20260502024734_InitDb")]
+    partial class InitDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -273,32 +273,6 @@ namespace Ecommerce.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Ecommerce.Models.ProductColor", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("ColorName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("UrlProductColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductColors");
-                });
-
             modelBuilder.Entity("Ecommerce.Models.ProductSpecification", b =>
                 {
                     b.Property<long>("Id")
@@ -339,14 +313,15 @@ namespace Ecommerce.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("ColorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("CurrentPrice")
                         .HasColumnType("float");
 
                     b.Property<double>("OriginPrice")
                         .HasColumnType("float");
-
-                    b.Property<long>("ProductColorId")
-                        .HasColumnType("bigint");
 
                     b.Property<long>("ProductId")
                         .HasColumnType("bigint");
@@ -358,9 +333,11 @@ namespace Ecommerce.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.Property<string>("UrlProductColor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("ProductColorId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ProductId");
 
@@ -516,7 +493,7 @@ namespace Ecommerce.Migrations
                     b.HasOne("Ecommerce.Models.Cart", "Cart")
                         .WithMany("CartItem")
                         .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Ecommerce.Models.ProductVariant", "ProductVariant")
@@ -554,7 +531,7 @@ namespace Ecommerce.Migrations
                     b.HasOne("Ecommerce.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -598,15 +575,6 @@ namespace Ecommerce.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Ecommerce.Models.ProductColor", b =>
-                {
-                    b.HasOne("Ecommerce.Models.Product", null)
-                        .WithMany("ProductColors")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Ecommerce.Models.ProductSpecificationMapping", b =>
                 {
                     b.HasOne("Ecommerce.Models.Product", "Product")
@@ -628,12 +596,6 @@ namespace Ecommerce.Migrations
 
             modelBuilder.Entity("Ecommerce.Models.ProductVariant", b =>
                 {
-                    b.HasOne("Ecommerce.Models.ProductColor", "ProductColor")
-                        .WithMany("ProductVariants")
-                        .HasForeignKey("ProductColorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Ecommerce.Models.Product", "Product")
                         .WithMany("ProductVariants")
                         .HasForeignKey("ProductId")
@@ -641,8 +603,6 @@ namespace Ecommerce.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
-
-                    b.Navigation("ProductColor");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.SpecificationDetail", b =>
@@ -720,18 +680,11 @@ namespace Ecommerce.Migrations
 
             modelBuilder.Entity("Ecommerce.Models.Product", b =>
                 {
-                    b.Navigation("ProductColors");
-
                     b.Navigation("ProductSpecifications");
 
                     b.Navigation("ProductVariants");
 
                     b.Navigation("SepcificationDetail");
-                });
-
-            modelBuilder.Entity("Ecommerce.Models.ProductColor", b =>
-                {
-                    b.Navigation("ProductVariants");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.ProductSpecification", b =>

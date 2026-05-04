@@ -7,7 +7,7 @@ namespace Ecommerce.Controllers
 
 {
     [ApiController]
-    [Route("api/productVariant")]
+    [Route("api/product-variants")]
     public class ProductVariantController: ControllerBase
     {
         private readonly IProductVariantService _productVariantService;

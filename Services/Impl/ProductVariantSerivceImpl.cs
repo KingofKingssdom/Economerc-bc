@@ -18,12 +18,17 @@ namespace Ecommerce.Services.Impl
         }
         public async Task<ResProductVariantDto> CreateProductVariant(ReqProductVariantDto reqProductVariantDto)
         {
+            string? urlImageProductColor = await _fileStorageUtil.UploadImage(reqProductVariantDto.UrlProductColor, "ProductColor");
             ProductVariant productVariant = new ProductVariant()
             {
                 Storage = reqProductVariantDto.Storage,
                 OriginPrice = reqProductVariantDto.OriginPrice,
                 CurrentPrice = reqProductVariantDto.CurrentPrice,
-                ProductId = reqProductVariantDto.ProductId
+                ProductId = reqProductVariantDto.ProductId,
+                UrlProductColor = urlImageProductColor,
+                ColorName = reqProductVariantDto.ColorName,
+                Stock = reqProductVariantDto.Stock
+
             };
             await _context.ProductVariants.AddAsync(productVariant);
             await _context.SaveChangesAsync();
@@ -33,7 +38,11 @@ namespace Ecommerce.Services.Impl
                Storage = productVariant.Storage,
                OriginPrice = productVariant.OriginPrice,
                CurrentPrice = productVariant.CurrentPrice,
-                ProductId = productVariant.ProductId
+               ProductId = productVariant.ProductId,
+               Stock = productVariant.Stock,
+               UrlProductColor = productVariant.UrlProductColor,
+               ColorName = productVariant.ColorName
+            
             };
             return resProductVariant;
         }
@@ -51,13 +60,18 @@ namespace Ecommerce.Services.Impl
                 Storage = productVariant.Storage,
                 OriginPrice = productVariant.OriginPrice,
                 CurrentPrice = productVariant.CurrentPrice,
-                ProductId = productVariant.ProductId
+                ProductId = productVariant.ProductId,
+                UrlProductColor = productVariant.UrlProductColor,
+                Stock = productVariant.Stock,
+                ColorName = productVariant.ColorName
+                
             };
             return resProductVariant;
 
         } 
         public async Task<List<ResProductVariantDto>> GetAllProductVariant()
         {
+
             List<ProductVariant> productVariants = await _context.ProductVariants
                 .ToListAsync();
             var result = productVariants.Select(pv => new ResProductVariantDto
@@ -66,12 +80,16 @@ namespace Ecommerce.Services.Impl
                 Storage = pv.Storage,
                 OriginPrice = pv.OriginPrice,
                 CurrentPrice = pv.CurrentPrice,
-                ProductId = pv.ProductId
+                ProductId = pv.ProductId,
+                UrlProductColor = pv.UrlProductColor,
+                ColorName = pv.ColorName,
+                Stock = pv.Stock
             }).ToList();
             return result;
         }
         public async Task<ResProductVariantDto> UpdateProductVariant(long id, ReqProductVariantDto reqProductVariantDto)
         {
+            string? urlImageProductColor = await _fileStorageUtil.UploadImage(reqProductVariantDto.UrlProductColor, "ProductColor");
             ProductVariant productVariant = await _context.ProductVariants
             .FirstOrDefaultAsync(pv => pv.Id == id);
             if (productVariant == null)
@@ -83,6 +101,9 @@ namespace Ecommerce.Services.Impl
             productVariant.OriginPrice = reqProductVariantDto.OriginPrice;
             productVariant.CurrentPrice = productVariant.CurrentPrice;
             productVariant.ProductId = productVariant.ProductId;
+            productVariant.Stock = productVariant.Stock;
+            productVariant.UrlProductColor = urlImageProductColor;
+            productVariant.ColorName = productVariant.ColorName;
             await _context.SaveChangesAsync();
             ResProductVariantDto resProductVariant = new ResProductVariantDto()
             {
@@ -90,7 +111,10 @@ namespace Ecommerce.Services.Impl
                 Storage = productVariant.Storage,
                 OriginPrice = productVariant.OriginPrice,
                 CurrentPrice = productVariant.CurrentPrice,
-                ProductId = productVariant.ProductId
+                ProductId = productVariant.ProductId,
+                UrlProductColor = productVariant.UrlProductColor,
+                ColorName = productVariant.ColorName,
+                Stock = productVariant.Stock
             };
             return resProductVariant;
         }
@@ -110,7 +134,10 @@ namespace Ecommerce.Services.Impl
                 Storage = productVariant.Storage,
                 OriginPrice = productVariant.OriginPrice,
                 CurrentPrice = productVariant.OriginPrice,
-                ProductId = productVariant.ProductId
+                ProductId = productVariant.ProductId,
+                UrlProductColor = productVariant.UrlProductColor,
+                ColorName = productVariant.ColorName,
+                Stock = productVariant.Stock
             };
             return resProductVariant;
         }

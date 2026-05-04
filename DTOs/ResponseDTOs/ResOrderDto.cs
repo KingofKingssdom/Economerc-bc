@@ -13,10 +13,10 @@ namespace Ecommerce.DTOs.ResponseDTOs
         public DateTime DayCreate { set; get; }
         public double TotalPrice { set; get; }
         public long UserId { set; get; }
-        public User User { set; get; } = null!;
+        //public User User { set; get; } = null!;
         public string ReceiverName { set; get; }
         public string ReceiverPhone { set; get; }
         public string ShippingAddress { set; get; }
-        public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        //public List<ResOrderItemDto> ResOrderItems { get; set; } = new List<ResOrderItemDto>();
     }
 }

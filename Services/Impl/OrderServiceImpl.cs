@@ -22,6 +22,18 @@ namespace Ecommerce.Services.Impl
             {
                 throw new Exception($"User have id = {userId} not found");
             }
+            var cartItemsInDb = await _context.CartItems
+                .Include(ci => ci.ProductVariant)
+                .Include(ci => ci.Cart)
+                .Where(ci => reqOrderDto.SelectedCartItemIds.Contains(ci.Id))
+                .ToListAsync();
+            var validItems = cartItemsInDb
+                .Where(ci => ci.Cart != null && ci.Cart.UserId == userId)
+                .ToList();
+            if (!validItems.Any())
+            { 
+                throw new Exception($"Xác thực giỏ hàng thất bại");
+            }
             Random rd = new Random();
             int randomNumber = rd.Next(1000, 10000);
             Order order = new Order()
@@ -31,30 +43,33 @@ namespace Ecommerce.Services.Impl
                 OrderStatus = OrderStatus.PENDING,
                 PaymentMethod = reqOrderDto.PaymentMethod,
                 PaymentStatus = (reqOrderDto.PaymentMethod == PaymentMethod.COD)
-                         ? PaymentStatus.UNPAID : PaymentStatus.PAID
+                         ? PaymentStatus.UNPAID : PaymentStatus.PAID,
+                ReceiverName = reqOrderDto.ReceiverName,
+                ReceiverPhone = reqOrderDto.ReceiverPhone,
+                ShippingAddress = reqOrderDto.ShippingAddress,
+                UserId = user.Id,
+                OrderItems = new List<OrderItem>()
             };
             double total = 0;
-            foreach (var item in reqOrderDto.ReqCartItemDtos)
+            foreach (var cartItem in validItems) // Duyệt trên validItems để an toàn
             {
+                // Lấy giá từ ProductVariant (CurrentPrice)
+                var price = cartItem.TotalPrice;
 
-                var productVariant = await _context.CartItems
-                    .FindAsync(item.ProductVariantId);
-                if(productVariant == null)
+                OrderItem orderItem = new OrderItem()
                 {
-                    throw new Exception("Product is not found");
-                }
-                OrderItem orderItem = new OrderItem() { 
-                    ProductVariantId = item.ProductVariantId,
-                    Quantity = item.Quantity,
-                    PriceAtTime = item.PriceAtTime,
-                    CreateAt = item.CreateAt,
+                    ProductVariantId = cartItem.ProductVariantId,
+                    Quantity = cartItem.Quantity,
+                    PriceAtTime = price,
+                    CreateAt = DateTime.Now,
                 };
 
-                total += orderItem.PriceAtTime * orderItem.Quantity;
+                total += price;
                 order.OrderItems.Add(orderItem);
             }
             order.TotalPrice = total;
-           await _context.Orders.AddAsync(order);
+            await _context.Orders.AddAsync(order);
+            _context.CartItems.RemoveRange(validItems);
             await _context.SaveChangesAsync();
             return new ResOrderDto()
             {
@@ -67,8 +82,7 @@ namespace Ecommerce.Services.Impl
                 ShippingAddress = order.ShippingAddress,
                 ReceiverName = order.ReceiverName,
                 ReceiverPhone = order.ReceiverPhone,
-                OrderStatus = order.OrderStatus,
-                OrderItems = order.OrderItems
+                OrderStatus = order.OrderStatus
             };
         }
         public async Task<List<ResOrderDto>> GetAllOrderByUserId(long userId)

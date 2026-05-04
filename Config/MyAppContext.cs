@@ -38,11 +38,6 @@ namespace Ecommerce.Data
             modelBuilder.Entity<Product>()
                 .HasIndex(p => p.ProductCode)
                 .IsUnique();
-            modelBuilder.Entity<ProductVariant>()
-                .HasOne(pv => pv.ProductColor)
-                .WithMany(pc => pc.ProductVariants)
-                .HasForeignKey(pv => pv.ProductColorId)
-                .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<User>()
                 .HasIndex(u=> new {u.Email, u.PhoneNumber})       
                 .IsUnique();
@@ -54,19 +49,28 @@ namespace Ecommerce.Data
             modelBuilder.Entity<Order>()
                 .HasIndex(o => o.OrderCode)
                 .IsUnique();
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.User)
+                .WithMany(u => u.Orders)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Category>()
                 .HasIndex(c => c.CategoryCode)
                 .IsUnique();
             modelBuilder.Entity<Brand>()
                 .HasIndex(b => b.BrandCode)
                 .IsUnique();
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.Cart)
+                .WithMany(c => c.CartItem)
+                .HasForeignKey(ci => ci.CartId)
+                .OnDelete(DeleteBehavior.NoAction);
 
         }
         public DbSet<Category> Categories { set; get; }
         public DbSet<Brand> Brands { set; get; }
         public DbSet<CategoryBrand> CategoryBrands { set; get; }
         public DbSet<Product> Products { set; get; }
-        public DbSet<ProductColor> ProductColors { set; get; }
         public DbSet<ProductVariant> ProductVariants { set; get; }
         public DbSet<ProductSpecification> ProductSpecifications { set; get; }
         public DbSet<ProductSpecificationMapping> ProductSpecificationMappings { set; get; }

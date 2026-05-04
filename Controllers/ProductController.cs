@@ -52,7 +52,7 @@ namespace Ecommerce.Controllers
                     data = product
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new { ex.Message });
             }
@@ -68,7 +68,7 @@ namespace Ecommerce.Controllers
                     message = "Update success",
                     data = product
                 });
-            }catch(Exception ex)
+            } catch (Exception ex)
             {
                 return BadRequest(new { ex.Message });
             }
@@ -84,11 +84,72 @@ namespace Ecommerce.Controllers
                     message = "Delete success",
                     data = product
                 });
-            }catch(Exception ex)
+            } catch (Exception ex)
             {
                 return NotFound(new { ex.Message });
             }
         }
+        [HttpGet("IsFeatured/{categoryId}")]
+        public async Task<ActionResult> GetByIsFeatured(long categoryId)
+        {
+            var product = _productService.GetAllProductByIsFeatured(categoryId);
+            return Ok(new
+            {
+                message = "get product by fetured success!",
+                data = product
+            });
+        }
+        [HttpGet("IsOnPromotion")]
+        public async Task<ActionResult> GetByIsOnPromotion()
+        {
+            var product = _productService.GetAllProductByIsOnPromotion();
+            return Ok(new
+            {
+                message = "get product by promotion success!",
+                data = product
+            });
+        }
+        [HttpGet("productId/{id}")]
+        public async Task<ActionResult> GetProductById(long id)
+        {
+            var product = _productService.GetProductById(id);
+            return Ok(new
+            {
+                message = "Get product success !",
+                data = product
+            });
+        }
+        [HttpGet("productName/{productName}")]
+        public async Task<ActionResult<ResBrandDto>> GetAllByProductName(string productName)
+        {
+            var products = await _productService.GetAllByProductByName(productName);
+            if (products == null)
+            {
+                return NotFound(new { message = "Products not found!" });
+            }
 
+            return Ok(new
+            {
+                message = "Get Product success",
+                data = products
+            });
+
+        }
+        [HttpGet("categoryId/{categoryId}")]
+        public async Task<ActionResult<ResBrandDto>> GetAllByCategoryId(long categoryId)
+        {
+            var products = await _productService.GetAllProductByCategoryId(categoryId);
+            if (products == null)
+            {
+                return NotFound(new { message = "Products not found!" });
+            }
+
+            return Ok(new
+            {
+                message = "Get Product success",
+                data = products
+            });
+
+        }
     }
 }

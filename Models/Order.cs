@@ -16,6 +16,6 @@ namespace Ecommerce.Models
         public string ReceiverName { set; get; }
         public string ReceiverPhone { set; get; }
         public string ShippingAddress { set; get; }
-        public List<OrderItem> OrderItems { get; } = new List<OrderItem>();
+        public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }

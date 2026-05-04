@@ -11,6 +11,7 @@ namespace Ecommerce.Services
         public Task<ResBrandDto> UpdateBrandAsync(long id, ReqBrandDto reqBrandDto);
 
         public Task<ResBrandDto> DeleteBrandAsync(long id);
+        public Task<List<ResBrandDto>> GetAllBrandByCategoryId(long categoryId);
 
     }
 }

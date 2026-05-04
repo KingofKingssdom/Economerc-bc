@@ -16,8 +16,13 @@ namespace Ecommerce.Controllers
             _orderService = orderService;
         }
         [HttpPost("{userId}")]
-        public async Task<ActionResult<ResOrderDto>> Create(long userId, ReqOrderDto reqOrderDto)
+        public async Task<ActionResult<ResOrderDto>> Create(long userId, [FromBody] ReqOrderDto reqOrderDto)
         {
+            if (reqOrderDto.SelectedCartItemIds == null || !reqOrderDto.SelectedCartItemIds.Any())
+            {
+                return BadRequest("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
+            }
+            Console.WriteLine("JSON Received ID Count: " + reqOrderDto.SelectedCartItemIds?.Count);
             var order = await _orderService.CreateOrder(userId, reqOrderDto);
             return Ok(new
             {

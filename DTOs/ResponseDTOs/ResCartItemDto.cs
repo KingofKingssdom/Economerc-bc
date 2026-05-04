@@ -10,8 +10,10 @@
         public DateTime CreateAt { set; get; }
         //public ResProductVariantDto resProductVariantDto { set; get; }
         public required string ProductName { set; get; }
-        public required string ProductColor { set; get; }
-        public required string UrlImageProduct { set; get; }
+        public string UrlProductColor { set; get; }
+        public string ColorName { set; get; }
+        public double TotalPrice { set; get; }
+        public string Storage { set; get; }
 
     }
 }

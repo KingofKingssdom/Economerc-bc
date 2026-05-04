@@ -14,7 +14,6 @@
         public Brand Brand { set; get; } = null!;
         public long CategoryId { set; get; }
         public Category Category { set; get; } = null!;
-        public List<ProductColor> ProductColors { get; } = new List<ProductColor>();
         public List<ProductVariant> ProductVariants { get; } = new List<ProductVariant>();
         public List<ProductSpecificationMapping> ProductSpecifications { get; } = [];
         public List<SpecificationDetail> SepcificationDetail { get; } = new List<SpecificationDetail>(); 

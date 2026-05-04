@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Ecommerce.Controllers
 {
     [ApiController]
-    [Route("api/cartItem")]
+    [Route("api/cart-items")]
     public class CartItemController: ControllerBase
     {
         private readonly ICartItemService _cartItemService;
@@ -14,8 +14,7 @@ namespace Ecommerce.Controllers
         {
             _cartItemService = cartItemService;
         }
-        [HttpPost("create")]
-
+        [HttpPost]
         public async Task<ActionResult<ResCartItemDto>> Create(ReqCartItemDto reqCartItemDto)
         {
             var cartItem = await _cartItemService.CreateCartItem(reqCartItemDto);
@@ -25,7 +24,16 @@ namespace Ecommerce.Controllers
                 data = cartItem,
             });
         }
-        
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<ResCartItemDto>> GetAllByUserId(long userId)
+        {
+            var cartItem = await _cartItemService.GetCartItemByUserId(userId);
+            return Ok(new
+            {
+                message = "Get success",
+                data = cartItem
+            });
+        }
 
     }
 }

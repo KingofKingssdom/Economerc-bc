@@ -17,7 +17,7 @@ namespace Ecommerce.Controllers
             _categoryService = categoryService;
         }
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResCategoryDto>> Create(ReqCategoryDto reqCatgoryDto)
         {
             try
