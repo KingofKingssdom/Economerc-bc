@@ -9,8 +9,6 @@
         public string UrlImageProduct { set; get; }
         public bool IsFeatured { set; get; }
         public bool IsOnPromotion { set; get; }
-        public long BrandId { set; get; }
-        public long CategoryId { set; get; }
         public ResBrandDto ResBrandDto { set; get; }
         public ResCategoryDto ResCategory { set; get; } 
         public List<ResProductVariantDto> ResProductVariantDto { set; get; }

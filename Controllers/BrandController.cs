@@ -22,11 +22,11 @@ namespace Ecommerce.Controllers
         {
             try
             {
-                var resBrandDto = await _brandService.CreateBrandAsync(reqBrandDto);
+                var resBrand = await _brandService.CreateBrand(reqBrandDto);
                 return Ok(new
                 {
-                    message = "Created success",
-                    data = reqBrandDto
+                    message = "Data is created successfully",
+                    data = resBrand
                 });
             }catch(Exception ex)
             {
@@ -36,15 +36,11 @@ namespace Ecommerce.Controllers
         [HttpGet]
         public async Task<ActionResult<ResBrandDto>> GetAll()
         {
-            var resBrandDtos = await _brandService.GetAllBrandAsync();
-            if(resBrandDtos == null)
-            {
-                return NotFound(new { message = "Brands not found!" });
-            }
+            var resBrands = await _brandService.GetAllBrand();
             return Ok(new
             {
-                message = "Get Brands success",
-                data = resBrandDtos
+                message = "Data is retrieved successfully",
+                data = resBrands
             });
         }
         [HttpGet("{brandCode}")]
@@ -52,11 +48,11 @@ namespace Ecommerce.Controllers
         {
             try
             {
-                var resBrandDto = await _brandService.GetBrandByBrandCodeAsync(brandCode);
+                var resBrand = await _brandService.GetBrandByBrandCode(brandCode);
                 return Ok(new
                 {
-                    message= "Get data successfully",
-                    data = resBrandDto
+                    message= "Data is retrieved successfully",
+                    data = resBrand
                 });
             }
             catch(Exception ex)
@@ -74,7 +70,7 @@ namespace Ecommerce.Controllers
                 var resBrandDto = await _brandService.GetAllBrandByCategoryId(categoryId);
                 return Ok(new
                 {
-                    message = "Get data successfully",
+                    message = "Data is retrieved successfully",
                     data = resBrandDto
                 });
             }
@@ -90,10 +86,10 @@ namespace Ecommerce.Controllers
         {
             try
             {
-                var resBrandDto = await _brandService.UpdateBrandAsync(id,reqBrandDto);
+                var resBrandDto = await _brandService.UpdateBrand(id,reqBrandDto);
                 return Ok(new
                 {
-                    message = "Update data successfully",
+                    message = "Data is updated successfully",
                     data = reqBrandDto
                 });
             }
@@ -107,10 +103,10 @@ namespace Ecommerce.Controllers
         {
             try
             {
-                var resBrandDto = await _brandService.DeleteBrandAsync(id);
+                var resBrandDto = await _brandService.DeleteBrand(id);
                 return Ok(new
                 {
-                    message = "Delete success",
+                    message = "data is deleted successfully",
                     data = resBrandDto
                 });
             }catch(Exception ex)

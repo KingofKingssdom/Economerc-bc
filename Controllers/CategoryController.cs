@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Ecommerce.Controllers
 {
     [ApiController]
-    [Route("api/category")]
+    [Route("api/categories")]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -17,16 +17,15 @@ namespace Ecommerce.Controllers
             _categoryService = categoryService;
         }
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResCategoryDto>> Create(ReqCategoryDto reqCatgoryDto)
         {
             try
             {
-                var resCategory = await _categoryService.CreateCategoryAsync(reqCatgoryDto);
+                var resCategory = await _categoryService.CreateCategory(reqCatgoryDto);
                 return Ok(
                new
                {
-                   message = "Created success!",
+                   message = "Data is created successfully!",
                    data = resCategory
                });
             }
@@ -39,36 +38,44 @@ namespace Ecommerce.Controllers
         [HttpGet]
         public async Task<ActionResult<ResCategoryDto>> GetAll()
         {
-            var categories = await _categoryService.GetAllCategoryAsync();
-            if(categories == null)
+            var resCategories = await _categoryService.GetAllCategory();
+            return Ok(new
             {
-                return NotFound(new { message = "Categories not found!" });
-            }
-            return Ok(categories);
+                message = "Data is retrieved successfully",
+                data = resCategories
+            });
+
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ResCategoryDto>> GetById(long id)
         {
-            ResCategoryDto? resCategoryDto = await _categoryService.GetCategoryByIdAsync(id);
-            if(resCategoryDto == null)
-            {
-                return NotFound(new { message = $"Category with Id = {id} not found" });
+            try {
+                ResCategoryDto resCategoryDto = await _categoryService.GetCategoryById(id);
+                return Ok(new
+                {
+                    message = "Data is retrieved successfully",
+                    data = resCategoryDto
+                });
             }
-            return Ok(resCategoryDto);
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
+
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResCategoryDto>> Update(long id, ReqCategoryDto reqCategoryDto)
         {
             try
             {
-                ResCategoryDto? resCategoryDto = await _categoryService.UpdateCategoryAsync(id, reqCategoryDto);
-                if (resCategoryDto == null)
+                var resCategory = await _categoryService.UpdateCategory(id, reqCategoryDto);
+                return Ok(new
                 {
-                    return NotFound(new { message = $"Category with Id = {id} not found" });
-                }
-                return Ok(resCategoryDto);
+                    message = "Data is updated successfully",
+                    data = resCategory
+                });
             }
             catch(Exception ex)
             {
@@ -82,14 +89,11 @@ namespace Ecommerce.Controllers
         {
             try
             {
-               var dataDeleted = await _categoryService.DeleteCategoryAsync(id);
-                return Ok(
-                    new
-                    {
-                        message = "Deleted success",
+               var dataDeleted = await _categoryService.DeleteCategory(id);
+                return Ok(new {
+                        message = "Data is deleted successfully",
                         data = dataDeleted
-                    }
-                    );
+                    });
             }
             catch(Exception ex)
             {

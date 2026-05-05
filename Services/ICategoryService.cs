@@ -6,11 +6,11 @@ namespace Ecommerce.Services
 {
     public interface ICategoryService
     {
-      public Task<ResCategoryDto> CreateCategoryAsync(ReqCategoryDto reqCategoryDto);
-      public Task<ResCategoryDto?> UpdateCategoryAsync(long id, ReqCategoryDto reqCategoryDto);
-      public Task<ResCategoryDto?> GetCategoryByIdAsync(long id);
-      public Task<List<ResCategoryDto>> GetAllCategoryAsync();
-      public Task<ResCategoryDto> DeleteCategoryAsync(long id);
+      public Task<ResCategoryDto> CreateCategory(ReqCategoryDto reqCategoryDto);
+      public Task<ResCategoryDto?> UpdateCategory(long id, ReqCategoryDto reqCategoryDto);
+      public Task<ResCategoryDto?> GetCategoryById(long id);
+      public Task<List<ResCategoryDto>> GetAllCategory();
+      public Task<ResCategoryDto> DeleteCategory(long id);
 
     }
 }

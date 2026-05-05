@@ -52,7 +52,8 @@ namespace Ecommerce.Services.Impl
                 ResBrandDto = new ResBrandDto()
                 {
                     BrandCode = resProduct.Brand.BrandCode,
-                    BrandName = resProduct.Brand.BrandName
+                    BrandName = resProduct.Brand.BrandName,
+                    UrlImageBrand = resProduct.Brand.UrlImageBrand
                 },
                 ResCategory = new ResCategoryDto()
                 {
@@ -127,7 +128,7 @@ namespace Ecommerce.Services.Impl
                     .FirstOrDefaultAsync(p => p.ProductCode == productCode);
             if(product == null)
             {
-                throw new Exception($"Not found with product code = {productCode}");
+                throw new Exception($"Product with product code {productCode} not found");
             }
 
             var ResProduct = new ResProductDto
@@ -143,7 +144,8 @@ namespace Ecommerce.Services.Impl
                 {
                     Id = product.Brand.Id,
                     BrandCode = product.Brand.BrandCode,
-                    BrandName = product.Brand.BrandName
+                    BrandName = product.Brand.BrandName,
+                    UrlImageBrand = product.Brand.UrlImageBrand
                 },
                 ResCategory = new ResCategoryDto
                 {
@@ -179,7 +181,7 @@ namespace Ecommerce.Services.Impl
                 .FirstOrDefaultAsync(p => p.Id == id);
             if(product == null)
             {
-                throw new Exception($"Product is id ={id} not found");
+                throw new Exception($"Product with id {id} not found");
             }
           
             if(reqProductDto.UrlImageProduct != null)
@@ -216,7 +218,8 @@ namespace Ecommerce.Services.Impl
                 {
                     Id = product.Brand.Id,
                     BrandCode = product.Brand.BrandCode,
-                    BrandName = product.Brand.BrandName
+                    BrandName = product.Brand.BrandName,
+                    UrlImageBrand = product.Brand.UrlImageBrand
                 },
                 ResCategory = new ResCategoryDto
                 {
@@ -243,7 +246,7 @@ namespace Ecommerce.Services.Impl
                 .FirstOrDefaultAsync(p=> p.Id == id);
             if(product == null)
             {
-                throw new Exception($"Product with product code = {id} not found");
+                throw new Exception($"Product with id {id} not found");
 
             }
             _context.Products.Remove(product);
@@ -261,7 +264,8 @@ namespace Ecommerce.Services.Impl
                 {
                     Id = product.Brand.Id,
                     BrandCode = product.Brand.BrandCode,
-                    BrandName = product.Brand.BrandName
+                    BrandName = product.Brand.BrandName,
+                    UrlImageBrand = product.Brand.UrlImageBrand
                 },
                 ResCategory = new ResCategoryDto
                 {
@@ -387,6 +391,10 @@ namespace Ecommerce.Services.Impl
                 .Include(p => p.ProductSpecifications)
                 .ThenInclude(ps => ps.ProductSpecification) 
                 .FirstOrDefaultAsync(p => p.Id == id);
+            if(product == null)
+            {
+                throw new Exception($"Product with id {id} not found");
+            }
             var ResProduct = new ResProductDto
             {
                 Id = product.Id,
@@ -400,7 +408,8 @@ namespace Ecommerce.Services.Impl
                 {
                     Id = product.Brand.Id,
                     BrandCode = product.Brand.BrandCode,
-                    BrandName = product.Brand.BrandName
+                    BrandName = product.Brand.BrandName,
+                    UrlImageBrand = product.Brand.UrlImageBrand
                 },
                 ResCategory = new ResCategoryDto
                 {
@@ -439,6 +448,10 @@ namespace Ecommerce.Services.Impl
                .Include(p => p.ProductSpecifications)
                .ThenInclude(ps => ps.ProductSpecification)
                .ToListAsync();
+            if(product == null)
+            {
+                throw new Exception("Product is not found");
+            }
             var resProduct = product.Select(p => new ResProductDto
             {
                 Id = p.Id,
@@ -448,8 +461,6 @@ namespace Ecommerce.Services.Impl
                 UrlImageProduct = p.UrlImageProduct,
                 IsFeatured = p.IsFeatured,
                 IsOnPromotion = p.IsOnPromotion,
-                BrandId = p.BrandId,
-                CategoryId = p.CategoryId,
                 ResCategory = new ResCategoryDto
                 {
                     Id = p.Category.Id,
@@ -495,6 +506,10 @@ namespace Ecommerce.Services.Impl
                 .Include(p => p.ProductSpecifications)
                 .ThenInclude(ps => ps.ProductSpecification)
                 .ToListAsync();
+            if(product == null)
+            {
+                throw new Exception($"Product with categoryId {categoryId} not found");
+            }
             var resProduct = product.Select(p => new ResProductDto
             {
                 Id = p.Id,
@@ -504,8 +519,60 @@ namespace Ecommerce.Services.Impl
                 UrlImageProduct = p.UrlImageProduct,
                 IsFeatured = p.IsFeatured,
                 IsOnPromotion = p.IsOnPromotion,
-                BrandId = p.BrandId,
-                CategoryId = p.CategoryId,
+                ResCategory = new ResCategoryDto
+                {
+                    Id = p.Category.Id,
+                    CategoryCode = p.Category.CategoryCode,
+                    CategoryName = p.Category.CategoryName
+                },
+                ResBrandDto = new ResBrandDto
+                {
+                    Id = p.Brand.Id,
+                    BrandCode = p.Brand.BrandCode,
+                    BrandName = p.Brand.BrandName,
+                    UrlImageBrand = p.Brand.UrlImageBrand
+                },
+                ResProductVariantDto = p.ProductVariants.Select(v => new ResProductVariantDto
+                {
+                    Id = v.Id,
+                    CurrentPrice = v.CurrentPrice,
+                    OriginPrice = v.OriginPrice,
+                    Storage = v.Storage,
+                    Stock = v.Stock,
+                    UrlProductColor = v.UrlProductColor,
+                    ColorName = v.ColorName
+                }).ToList(),
+                ResProductSpecification = p.ProductSpecifications
+                .Select(ps => new ResProductSpecificationDto
+                {
+
+                    Id = ps.ProductSpecification.Id,
+                    SpecificationName = ps.ProductSpecification.SpecificationName
+                }).ToList()
+
+            }).ToList();
+
+            return resProduct;
+        }
+        public async Task<List<ResProductDto>> GetAllProductByCategoryIdAndBrandId(long categoryId, long brandId)
+        {
+            var product = await _context.Products
+                .Where(p => p.CategoryId == categoryId && p.BrandId == brandId)
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Include(p => p.ProductVariants)
+                .Include(p => p.ProductSpecifications)
+                .ThenInclude(ps => ps.ProductSpecification)
+                .ToListAsync();
+            var resProduct = product.Select(p => new ResProductDto
+            {
+                Id = p.Id,
+                ProductCode = p.ProductCode,
+                ProductName = p.ProductName,
+                Description = p.Description,
+                UrlImageProduct = p.UrlImageProduct,
+                IsFeatured = p.IsFeatured,
+                IsOnPromotion = p.IsOnPromotion,
                 ResCategory = new ResCategoryDto
                 {
                     Id = p.Category.Id,

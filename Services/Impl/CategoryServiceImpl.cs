@@ -14,7 +14,7 @@ namespace Ecommerce.Services.Impl
         {
             _context = context;
         }
-       public async Task<ResCategoryDto> CreateCategoryAsync(ReqCategoryDto reqCategoryDto) {
+       public async Task<ResCategoryDto> CreateCategory(ReqCategoryDto reqCategoryDto) {
          
             Category category = new Category
             {
@@ -26,7 +26,7 @@ namespace Ecommerce.Services.Impl
                 .AnyAsync(c => c.CategoryCode == reqCategoryDto.CategoryCode);
             if (isExist)
             {
-                throw new Exception("Category code already exist");
+                throw new Exception("The category code already exists");
             }
             await _context.Categories.AddAsync(category);     
             await _context.SaveChangesAsync();
@@ -38,18 +38,18 @@ namespace Ecommerce.Services.Impl
                 CategoryName = category.CategoryName
             };
         }
-       public async Task<ResCategoryDto?> UpdateCategoryAsync(long id, ReqCategoryDto reqCategoryDto) {
+       public async Task<ResCategoryDto?> UpdateCategory(long id, ReqCategoryDto reqCategoryDto) {
             Category? category = await _context.Categories
                 .FirstOrDefaultAsync(c => c.Id == id);
             if (category == null)
             {
-                throw new Exception($"Category is not found");
+                throw new Exception($"Category with id {id} not found");
             }
             bool isExist = await _context.Categories
                 .AnyAsync(c => c.CategoryCode == reqCategoryDto.CategoryCode && c.Id != id);
             if (isExist)
             {
-                throw new Exception("Category code  already exists");
+                throw new Exception("The category code already exists");
             }
             category.CategoryCode = reqCategoryDto.CategoryCode;
             category.CategoryName = reqCategoryDto.CategoryName;
@@ -64,12 +64,12 @@ namespace Ecommerce.Services.Impl
             };
 
         }
-        public async Task<ResCategoryDto?> GetCategoryByIdAsync(long id) {
+        public async Task<ResCategoryDto?> GetCategoryById(long id) {
             Category? category = await _context.Categories
                 .FirstOrDefaultAsync(c => c.Id == id);
             if(category == null)
             {
-                throw new Exception($"Category is not found");
+                throw new Exception($"Category with id {id} not found");
             }
             return new ResCategoryDto
             {
@@ -78,7 +78,7 @@ namespace Ecommerce.Services.Impl
                 CategoryName = category.CategoryName
             };
         }
-        public async Task<List<ResCategoryDto>> GetAllCategoryAsync() {
+        public async Task<List<ResCategoryDto>> GetAllCategory() {
             List<Category> categories = await _context.Categories.ToListAsync();
             var resCategory = categories.Select(caterogy => new ResCategoryDto
             {
@@ -89,12 +89,12 @@ namespace Ecommerce.Services.Impl
             
             return resCategory;
         }
-        public async Task<ResCategoryDto> DeleteCategoryAsync(long id) {
+        public async Task<ResCategoryDto> DeleteCategory(long id) {
 
             Category? category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
             if(category == null)
             {
-                throw new Exception($"Category Id = {id} not found");
+                throw new Exception($"Category with id {id} not found");
             }
              _context.Categories.Remove(category);
             await _context.SaveChangesAsync();

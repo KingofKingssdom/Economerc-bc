@@ -15,5 +15,6 @@ namespace Ecommerce.Services
         public Task<List<ResProductDto>> GetAllProductByIsOnPromotion();
         public Task<ResProductDto> GetProductById(long id);
         public Task<List<ResProductDto>> GetAllProductByCategoryId(long categoryId);
+        public Task<List<ResProductDto>> GetAllProductByCategoryIdAndBrandId(long categoryId, long brandId);
     }
 }

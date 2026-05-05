@@ -20,7 +20,7 @@ namespace Ecommerce.Controllers
             var product = await _productService.CreateProduct(reqProductDto);
             return Ok(new
             {
-                message = "Created success!",
+                message = "Data is created successfully!",
                 data = product
             });
         }
@@ -29,14 +29,10 @@ namespace Ecommerce.Controllers
         public async Task<ActionResult<ResBrandDto>> GetAll()
         {
             var products = await _productService.GetAllProduct();
-            if (products == null)
-            {
-                return NotFound(new { message = "Products not found!" });
-            }
 
             return Ok(new
             {
-                message = "Get Product success",
+                message = "Data is retrieved successfully",
                 data = products
             });
 
@@ -48,7 +44,7 @@ namespace Ecommerce.Controllers
                 var product = await _productService.GetByProductCode(productCode);
                 return Ok(new
                 {
-                    message = "Get success!",
+                    message = "Data is retrieved successfully!",
                     data = product
                 });
             }
@@ -60,12 +56,13 @@ namespace Ecommerce.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<ResProductDto>> Update(long id, ReqProductDto reqProductDto)
         {
-            var product = await _productService.UpdateProduct(id, reqProductDto);
-            try
+            
+            try   
             {
+                var product = await _productService.UpdateProduct(id, reqProductDto);
                 return Ok(new
                 {
-                    message = "Update success",
+                    message = "Data is updated successfully",
                     data = product
                 });
             } catch (Exception ex)
@@ -76,12 +73,12 @@ namespace Ecommerce.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<ResProductDto>> Delete(long id)
         {
-            var product = await _productService.DeleteProduct(id);
             try
             {
+                var product = await _productService.DeleteProduct(id);
                 return Ok(new
                 {
-                    message = "Delete success",
+                    message = "Data is deleted successfully",
                     data = product
                 });
             } catch (Exception ex)
@@ -92,12 +89,19 @@ namespace Ecommerce.Controllers
         [HttpGet("IsFeatured/{categoryId}")]
         public async Task<ActionResult> GetByIsFeatured(long categoryId)
         {
-            var product = _productService.GetAllProductByIsFeatured(categoryId);
-            return Ok(new
+            try
             {
-                message = "get product by fetured success!",
-                data = product
-            });
+                var product = _productService.GetAllProductByIsFeatured(categoryId);
+                return Ok(new
+                {
+                    message = "Data is retrieved successfully!",
+                    data = product
+                });
+            }
+            catch(Exception ex){
+                return BadRequest(new { message = ex.Message });
+            }
+            
         }
         [HttpGet("IsOnPromotion")]
         public async Task<ActionResult> GetByIsOnPromotion()
@@ -105,24 +109,49 @@ namespace Ecommerce.Controllers
             var product = _productService.GetAllProductByIsOnPromotion();
             return Ok(new
             {
-                message = "get product by promotion success!",
+                message = "Data is retrieved successfully!",
                 data = product
             });
         }
         [HttpGet("productId/{id}")]
         public async Task<ActionResult> GetProductById(long id)
         {
-            var product = _productService.GetProductById(id);
-            return Ok(new
+            try {
+                var product = _productService.GetProductById(id);
+                return Ok(new
+                {
+                    message = "Data is retrieved successfully !",
+                    data = product
+                });
+            }
+            catch(Exception ex)
             {
-                message = "Get product success !",
-                data = product
-            });
+                return BadRequest(new { message = ex.Message });
+            }
+            
         }
         [HttpGet("productName/{productName}")]
         public async Task<ActionResult<ResBrandDto>> GetAllByProductName(string productName)
         {
-            var products = await _productService.GetAllByProductByName(productName);
+            try
+            {
+                var products = await _productService.GetAllByProductByName(productName);
+                return Ok(new
+                {
+                    message = "Data is retrieved successfully",
+                    data = products
+                });
+            }
+            catch(Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+
+        }
+        [HttpGet("categoryId/{categoryId}")]
+        public async Task<ActionResult<ResBrandDto>> GetAllByCategoryId(long categoryId)
+        {
+            var products = await _productService.GetAllProductByCategoryId(categoryId);
             if (products == null)
             {
                 return NotFound(new { message = "Products not found!" });
@@ -135,10 +164,10 @@ namespace Ecommerce.Controllers
             });
 
         }
-        [HttpGet("categoryId/{categoryId}")]
-        public async Task<ActionResult<ResBrandDto>> GetAllByCategoryId(long categoryId)
+        [HttpGet("categoryId/{categoryId}/brandId/{brandId}")]
+        public async Task<ActionResult<ResBrandDto>> GetAllByCategoryId(long categoryId, long brandId)
         {
-            var products = await _productService.GetAllProductByCategoryId(categoryId);
+            var products = await _productService.GetAllProductByCategoryIdAndBrandId(categoryId, brandId);
             if (products == null)
             {
                 return NotFound(new { message = "Products not found!" });

@@ -5,12 +5,12 @@ namespace Ecommerce.Services
 {
     public interface IBrandService
     {
-        public Task<ResBrandDto> CreateBrandAsync(ReqBrandDto reqBrandDto);
-        public Task<List<ResBrandDto>> GetAllBrandAsync();
-        public Task<ResBrandDto> GetBrandByBrandCodeAsync(string brandCode);
-        public Task<ResBrandDto> UpdateBrandAsync(long id, ReqBrandDto reqBrandDto);
+        public Task<ResBrandDto> CreateBrand(ReqBrandDto reqBrandDto);
+        public Task<List<ResBrandDto>> GetAllBrand();
+        public Task<ResBrandDto> GetBrandByBrandCode(string brandCode);
+        public Task<ResBrandDto> UpdateBrand(long id, ReqBrandDto reqBrandDto);
 
-        public Task<ResBrandDto> DeleteBrandAsync(long id);
+        public Task<ResBrandDto> DeleteBrand(long id);
         public Task<List<ResBrandDto>> GetAllBrandByCategoryId(long categoryId);
 
     }
