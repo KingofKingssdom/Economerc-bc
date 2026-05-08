@@ -1,6 +1,7 @@
 
 using Ecommerce.Config;
 using Ecommerce.Data;
+using Ecommerce.Database;
 using Ecommerce.Services;
 using Ecommerce.Services.Impl;
 using Ecommerce.Util;
@@ -13,7 +14,7 @@ namespace Ecommerce
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -114,6 +115,20 @@ namespace Ecommerce
             app.UseStaticFiles();
             app.UseSwagger();
             app.UseSwaggerUI();
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<MyAppContext>();
+                    await DbInitializer.SeedAsync(context);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "Lỗi khi tự động khởi tạo dữ liệu.");
+                }
+            }
             app.Run();
         }
     }

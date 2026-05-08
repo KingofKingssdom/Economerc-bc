@@ -23,4 +23,12 @@
     <Folder Include="wwwRoot\Images\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\LearnC#\Ecommerce\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\LearnC#\Ecommerce\.editorconfig" />
+  </ItemGroup>
+
 </Project>
