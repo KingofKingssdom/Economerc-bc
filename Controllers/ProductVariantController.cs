@@ -22,7 +22,7 @@ namespace Ecommerce.Controllers
             var productVariant = await _productVariantService.CreateProductVariant(reqProductVariantDto);
             return Ok(new
             {
-                message = "Create success",
+                message = "Data is created successfully",
                 data = productVariant
             });
         }
@@ -32,7 +32,7 @@ namespace Ecommerce.Controllers
             var productVariant = await _productVariantService.GetAllProductVariant();
             return Ok(new
             {
-                message = "Get all product color success",
+                message = "Data is retrieved successfully",
                 data = productVariant
             });
         }
@@ -44,7 +44,7 @@ namespace Ecommerce.Controllers
                 var productVariant = await _productVariantService.GetProductVariantById(id);
                 return Ok(new
                 {
-                    message = "Get success",
+                    message = "Data is retrieved successfully",
                     data = productVariant
                 });
             }
@@ -63,7 +63,7 @@ namespace Ecommerce.Controllers
                 var productVariant = await _productVariantService.UpdateProductVariant(id, reqProductVariant);
                 return Ok(new
                 {
-                    message = "Update success",
+                    message = "Data is updated successfully",
                     data = productVariant
                 });
             }
@@ -74,7 +74,6 @@ namespace Ecommerce.Controllers
 
         }
         [HttpDelete("{id}")]
-
         public async Task<ActionResult<ResProductVariantDto>> Delete(long id)
         {
             try
@@ -82,7 +81,7 @@ namespace Ecommerce.Controllers
                 var productVariant = await _productVariantService.DeleteProductVariant(id);
                 return Ok(new
                 {
-                    message = "Delete success",
+                    message = "Data is deleted successfully",
                     data = productVariant
                 });
             }

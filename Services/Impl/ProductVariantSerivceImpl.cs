@@ -52,7 +52,7 @@ namespace Ecommerce.Services.Impl
              .FirstOrDefaultAsync(pv => pv.Id == id);
             if (productVariant == null)
             {
-                throw new Exception($"Product variant with Id = {id} not found");
+                throw new Exception($"Product variant with id {id} not found");
             }
             ResProductVariantDto resProductVariant = new ResProductVariantDto()
             {
@@ -94,7 +94,7 @@ namespace Ecommerce.Services.Impl
             .FirstOrDefaultAsync(pv => pv.Id == id);
             if (productVariant == null)
             {
-                throw new Exception($"Product variant with Id = {id} not found");
+                throw new Exception($"Product variant with id {id} not found");
             }
 
             productVariant.Storage = reqProductVariantDto.Storage;
@@ -124,7 +124,7 @@ namespace Ecommerce.Services.Impl
           .FirstOrDefaultAsync(pv => pv.Id == id);
             if (productVariant == null)
             {
-                throw new Exception($"Product variant with Id = {id} not found");
+                throw new Exception($"Product variant with id {id} not found");
             }
             _context.ProductVariants.Remove(productVariant);
             await _context.SaveChangesAsync();
