@@ -101,5 +101,23 @@ namespace Ecommerce.Controllers
             }
             
         }
+        [HttpGet("categoryCode/{categoryCode}")]
+        public async Task<ActionResult<ResCategoryDto>> GetByCategoryCode(string categoryCode)
+        {
+            try
+            {
+                var category = await _categoryService.GetCategoryByCategoryCode(categoryCode);
+                return Ok(new
+                {
+                    message = "Data is retrieved successfully",
+                    data = category
+                });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { ex.Message });
+            }
+
+        }
     }
 }

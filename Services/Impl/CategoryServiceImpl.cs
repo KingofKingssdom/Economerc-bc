@@ -106,5 +106,20 @@ namespace Ecommerce.Services.Impl
             };
            
         }
+        public async Task<ResCategoryDto> GetCategoryByCategoryCode(string categoryCode)
+        {
+            Category category = await _context.Categories
+                .FirstOrDefaultAsync(c => c.CategoryCode == categoryCode);
+            if (category == null)
+            {
+                throw new Exception($"Category with category code {categoryCode} not found");
+            }
+            return new ResCategoryDto
+            {
+                Id = category.Id,
+                CategoryCode = category.CategoryCode,
+                CategoryName = category.CategoryName
+            };
+        }
     }
 }
