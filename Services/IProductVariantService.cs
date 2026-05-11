@@ -8,7 +8,7 @@ namespace Ecommerce.Services
         public Task<ResProductVariantDto> CreateProductVariant(ReqProductVariantDto reqProductVariantDto, long productId);
         public Task<ResProductVariantDto> GetProductVariantById(long id);
         public Task<List<ResProductVariantDto>> GetAllProductVariant();
-        public Task<ResProductVariantDto> UpdateProductVariant(long id, ReqProductVariantDto reqProductVariantDto);
+        public Task<ResProductVariantDto> UpdateProductVariant(long id, long productId ,ReqProductVariantDto reqProductVariantDto);
         public Task<ResProductVariantDto> DeleteProductVariant(long id);
         public Task<List<ResProductVariantDto>> GetAllProductVariantByProductId(long id);
     }

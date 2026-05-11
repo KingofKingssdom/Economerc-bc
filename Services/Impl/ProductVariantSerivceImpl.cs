@@ -89,7 +89,7 @@ namespace Ecommerce.Services.Impl
             }).ToList();
             return result;
         }
-        public async Task<ResProductVariantDto> UpdateProductVariant(long id, ReqProductVariantDto reqProductVariantDto)
+        public async Task<ResProductVariantDto> UpdateProductVariant(long id, long productId ,ReqProductVariantDto reqProductVariantDto)
         {
             string? urlImageProductColor = await _fileStorageUtil.UploadImage(reqProductVariantDto.UrlProductColor, "ProductColor");
             ProductVariant productVariant = await _context.ProductVariants
@@ -101,11 +101,11 @@ namespace Ecommerce.Services.Impl
 
             productVariant.Storage = reqProductVariantDto.Storage;
             productVariant.OriginPrice = reqProductVariantDto.OriginPrice;
-            productVariant.CurrentPrice = productVariant.CurrentPrice;
-            productVariant.ProductId = productVariant.ProductId;
-            productVariant.Stock = productVariant.Stock;
+            productVariant.CurrentPrice = reqProductVariantDto.CurrentPrice;
+            productVariant.ProductId = productId;
+            productVariant.Stock = reqProductVariantDto.Stock;
             productVariant.UrlProductColor = urlImageProductColor;
-            productVariant.ColorName = productVariant.ColorName;
+            productVariant.ColorName = reqProductVariantDto.ColorName;
             await _context.SaveChangesAsync();
             ResProductVariantDto resProductVariant = new ResProductVariantDto()
             {

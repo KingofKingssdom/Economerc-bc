@@ -55,12 +55,12 @@ namespace Ecommerce.Controllers
 
 
         }
-        [HttpPut("{id}")]
-        public async Task<ActionResult<ResProductVariantDto>> Update(long id, ReqProductVariantDto reqProductVariant)
+        [HttpPut("product-variantId/{id}/productId/{productId}")]
+        public async Task<ActionResult<ResProductVariantDto>> Update(long id, long productId,ReqProductVariantDto reqProductVariant)
         {
             try
             {
-                var productVariant = await _productVariantService.UpdateProductVariant(id, reqProductVariant);
+                var productVariant = await _productVariantService.UpdateProductVariant(id,productId ,reqProductVariant);
                 return Ok(new
                 {
                     message = "Data is updated successfully",

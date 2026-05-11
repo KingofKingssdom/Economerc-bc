@@ -196,13 +196,13 @@ namespace Ecommerce.Services.Impl
             product.IsOnPromotion = reqProductDto.IsOnPromotion;
             product.BrandId = reqProductDto.BrandId;
             product.CategoryId = reqProductDto.CategoryId;
-            foreach (var productSpecificationId in reqProductDto.ProductSpecificationId)
-            {
-                product.ProductSpecifications.Add(new ProductSpecificationMapping
-                {
-                    ProductSpecificationId = productSpecificationId
-                });
-            }
+            //foreach (var productSpecificationId in reqProductDto.ProductSpecificationId)
+            //{
+            //    product.ProductSpecifications.Add(new ProductSpecificationMapping
+            //    {
+            //        ProductSpecificationId = productSpecificationId
+            //    });
+            //}
             await _context.SaveChangesAsync();
             
             ResProductDto resProduct = new ResProductDto
