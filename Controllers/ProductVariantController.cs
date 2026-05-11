@@ -16,10 +16,10 @@ namespace Ecommerce.Controllers
             _productVariantService = productVariantService;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<ResProductVariantDto>> Create(ReqProductVariantDto reqProductVariantDto)
+        [HttpPost("productId/{productId}")]
+        public async Task<ActionResult<ResProductVariantDto>> Create(ReqProductVariantDto reqProductVariantDto, long productId)
         {
-            var productVariant = await _productVariantService.CreateProductVariant(reqProductVariantDto);
+            var productVariant = await _productVariantService.CreateProductVariant(reqProductVariantDto, productId);
             return Ok(new
             {
                 message = "Data is created successfully",
@@ -90,6 +90,16 @@ namespace Ecommerce.Controllers
                 return NotFound(new { ex.Message });
             }
 
+        }
+        [HttpGet("productId/{productId}")]
+        public async Task<ActionResult> GetAllByProductId(long productId)
+        {
+            var respoductVariant = _productVariantService.GetAllProductVariantByProductId(productId);
+            return Ok(new
+            {
+                message = "Data is retrieved successfully",
+                data = respoductVariant
+            });
         }
     }
 }

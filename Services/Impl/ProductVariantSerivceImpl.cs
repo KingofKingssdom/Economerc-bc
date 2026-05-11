@@ -4,6 +4,8 @@ using Ecommerce.DTOs.ResponseDTOs;
 using Ecommerce.Models;
 using Ecommerce.Util;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client.Extensions.Msal;
+using System.Collections;
 
 namespace Ecommerce.Services.Impl
 {
@@ -16,7 +18,7 @@ namespace Ecommerce.Services.Impl
             _context = context;
             _fileStorageUtil = fileStorageUtil;
         }
-        public async Task<ResProductVariantDto> CreateProductVariant(ReqProductVariantDto reqProductVariantDto)
+        public async Task<ResProductVariantDto> CreateProductVariant(ReqProductVariantDto reqProductVariantDto, long productId)
         {
             string? urlImageProductColor = await _fileStorageUtil.UploadImage(reqProductVariantDto.UrlProductColor, "ProductColor");
             ProductVariant productVariant = new ProductVariant()
@@ -24,7 +26,7 @@ namespace Ecommerce.Services.Impl
                 Storage = reqProductVariantDto.Storage,
                 OriginPrice = reqProductVariantDto.OriginPrice,
                 CurrentPrice = reqProductVariantDto.CurrentPrice,
-                ProductId = reqProductVariantDto.ProductId,
+                ProductId = productId,
                 UrlProductColor = urlImageProductColor,
                 ColorName = reqProductVariantDto.ColorName,
                 Stock = reqProductVariantDto.Stock
@@ -140,6 +142,24 @@ namespace Ecommerce.Services.Impl
                 Stock = productVariant.Stock
             };
             return resProductVariant;
+        }
+        public async Task<List<ResProductVariantDto>> GetAllProductVariantByProductId(long productId)
+        {
+            var productVariants = await _context.ProductVariants
+                .Where(pv => pv.ProductId == productId)
+                .ToListAsync();
+            var resProductVariants = productVariants.Select(pv => new ResProductVariantDto
+            {
+                Id = pv.Id,
+                Storage = pv.Storage,
+                OriginPrice = pv.OriginPrice,
+                CurrentPrice = pv.CurrentPrice,
+                ProductId = pv.ProductId,
+                UrlProductColor = pv.UrlProductColor,
+                ColorName = pv.ColorName,
+                Stock = pv.Stock
+            }).ToList();
+            return resProductVariants;
         }
     }
 }

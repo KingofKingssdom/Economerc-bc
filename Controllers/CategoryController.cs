@@ -64,13 +64,13 @@ namespace Ecommerce.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<ResCategoryDto>> Update(long id, ReqCategoryDto reqCategoryDto)
+        [HttpPut("categoryId/{categoryId}")]
+        //[Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ResCategoryDto>> Update(long categoryId, ReqCategoryDto reqCategoryDto)
         {
             try
             {
-                var resCategory = await _categoryService.UpdateCategory(id, reqCategoryDto);
+                var resCategory = await _categoryService.UpdateCategory(categoryId, reqCategoryDto);
                 return Ok(new
                 {
                     message = "Data is updated successfully",
