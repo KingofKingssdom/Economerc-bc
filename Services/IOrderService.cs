@@ -10,6 +10,7 @@ namespace Ecommerce.Services
         public Task<List<ResOrderDto>> GetAllOrderByUserId(long userId);
         public Task<ResOrderDto> UpdateOrderByOrderStatus(long orderId, OrderStatus newOrderStatus);
         public Task<ResOrderDto> CancelOrderByOrderId(long orderId);
+        public Task<List<ResOrderDto>> GetAllOrder();
 
     }
 }

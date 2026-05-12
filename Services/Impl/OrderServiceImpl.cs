@@ -124,13 +124,12 @@ namespace Ecommerce.Services.Impl
         public async Task<ResOrderDto> CancelOrderByOrderId(long orderId)
         {
             var order = await _context.Orders
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(o=> o.Id == orderId);
             if(order == null)
             {
                 throw new Exception($"Order is not found");
             }
             order.OrderStatus = OrderStatus.CANCELED;
-            _context.Orders.UpdateRange(order);
             await _context.SaveChangesAsync();
             return new ResOrderDto()
             {
@@ -138,5 +137,24 @@ namespace Ecommerce.Services.Impl
                 OrderStatus = order.OrderStatus
             };
         }
+        public async Task<List<ResOrderDto>> GetAllOrder()
+        {
+            var orders = await _context.Orders.ToListAsync();
+            var resOrders = orders.Select(o => new ResOrderDto()
+            {
+                Id = o.Id,
+                OrderCode = o.OrderCode,
+                OrderStatus = o.OrderStatus,
+                PaymentMethod = o.PaymentMethod,
+                PaymentStatus = o.PaymentStatus,
+                DayCreate = o.DayCreate,
+                TotalPrice = o.TotalPrice,
+                ReceiverName = o.ReceiverName,
+                ReceiverPhone = o.ReceiverPhone,
+                ShippingAddress = o.ShippingAddress
+            }).ToList();
+            return resOrders;
+        }
+        
     }
 }

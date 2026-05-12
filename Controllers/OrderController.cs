@@ -76,5 +76,16 @@ namespace Ecommerce.Controllers
             }
            
         }
+
+        [HttpGet]
+        public async Task<ActionResult> GetAll()
+        {
+            var resOrders = await _orderService.GetAllOrder();
+            return Ok(new
+            {
+                message = "Data is retrieved successful",
+                data = resOrders
+            });
+        }
     }
 }
