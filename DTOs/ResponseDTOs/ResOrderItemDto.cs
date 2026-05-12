@@ -16,5 +16,8 @@ namespace Ecommerce.DTOs.ResponseDTOs
         public string ColorName { set; get; }
         public double TotalPrice { set; get; }
         public string Storage { set; get; }
+        public string ReceiverName { set; get; }
+        public string ReceiverPhone { set; get; }
+        public string ShippingAddress { set; get; }
     }
 }

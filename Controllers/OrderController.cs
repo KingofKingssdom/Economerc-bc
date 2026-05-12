@@ -41,7 +41,7 @@ namespace Ecommerce.Controllers
                 data = orders
             });
         }
-        [HttpPut("{orderId}/{newOrderStatus}")]
+        [HttpPut("orderId/{orderId}/newOrderStatus/{newOrderStatus}")]
         public async Task<ActionResult<ResOrderDto>> UpdateOrderByOrderStatus(long orderId, OrderStatus newOrderStatus)
         {
             try

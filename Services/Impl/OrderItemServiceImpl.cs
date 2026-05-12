@@ -15,6 +15,7 @@ namespace Ecommerce.Services.Impl
             public async Task<List<ResOrderItemDto>> GetAllOrderItemsByOrderId(long orderId)
         {
             List<OrderItem> orderItems = await _context.OrderItems
+                .Include(o=> o.Order)
                 .Include(ci => ci.ProductVariant)
                 .ThenInclude(pv => pv.Product)
                 .Where(oi => oi.OrderId == orderId)
@@ -26,7 +27,11 @@ namespace Ecommerce.Services.Impl
                 Quantity = oi.Quantity,
                 Storage = oi.ProductVariant.Storage,
                 UrlProductColor = oi.ProductVariant.UrlProductColor,
-                PriceAtTime = oi.PriceAtTime
+                PriceAtTime = oi.PriceAtTime,
+                TotalPrice = oi.Order.TotalPrice,
+                ReceiverName = oi.Order.ReceiverName,
+                ShippingAddress = oi.Order.ShippingAddress,
+                ReceiverPhone = oi.Order.ReceiverPhone
             }).ToList();
             return resOderItems;
         }
