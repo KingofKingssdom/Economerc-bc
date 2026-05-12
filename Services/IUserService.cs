@@ -10,5 +10,6 @@ namespace Ecommerce.Services
         public Task<List<ResUserDto>> GetAllUser();
         public Task<ResUserDto> UpdateUser(long id, ReqUserDto reqUserDto, string roleName);
         public Task<ResUserDto> DeleteUser(long id);
+        public Task<long> CountUser();
     }
 }

@@ -11,6 +11,8 @@ namespace Ecommerce.Services
         public Task<ResOrderDto> UpdateOrderByOrderStatus(long orderId, OrderStatus newOrderStatus);
         public Task<ResOrderDto> CancelOrderByOrderId(long orderId);
         public Task<List<ResOrderDto>> GetAllOrder();
-
+        public Task<long> CountOrder();
+        public Task<double> SumPriceOrder(OrderStatus orderStatus);
+             
     }
 }

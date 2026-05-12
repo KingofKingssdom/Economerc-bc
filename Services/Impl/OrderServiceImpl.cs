@@ -155,6 +155,18 @@ namespace Ecommerce.Services.Impl
             }).ToList();
             return resOrders;
         }
-        
+        public async Task<long> CountOrder()
+        {
+            var count = await _context.Orders.CountAsync();
+            return count;
+        }
+        public async Task<double> SumPriceOrder(OrderStatus orderStatus)
+        {
+            var total = await _context.Orders
+                .Where(o => o.OrderStatus == orderStatus)
+                .SumAsync(o => o.TotalPrice);
+            return total; 
+        }
+
     }
 }

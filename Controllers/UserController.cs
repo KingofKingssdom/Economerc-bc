@@ -124,5 +124,15 @@ namespace Ecommerce.Controllers
                 CartId = cartId
             });
         }
+        [HttpGet("count")]
+        public async Task<ActionResult> Count()
+        {
+            var c = await _userService.CountUser();
+            return Ok(new
+            {
+                message = "Data counted successfully",
+                data = c
+            });
+        }
     }
 }

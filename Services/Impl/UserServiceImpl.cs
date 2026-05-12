@@ -183,5 +183,12 @@ namespace Ecommerce.Services.Impl
                 Email = user.Email
             };
         }
+        public async Task<long> CountUser()
+        {
+            var count = await _context.UserRoles
+                .Where(ur => ur.RoleId == 2)
+                .CountAsync();
+            return count;
+        }
     }
 }

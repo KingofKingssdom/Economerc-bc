@@ -161,5 +161,10 @@ namespace Ecommerce.Services.Impl
             }).ToList();
             return resProductVariants;
         }
+        public async Task<long> CountProduct()
+        {
+            var total = await _context.ProductVariants.SumAsync(st => st.Stock);
+            return total;
+        }
     }
 }

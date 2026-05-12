@@ -87,5 +87,25 @@ namespace Ecommerce.Controllers
                 data = resOrders
             });
         }
+        [HttpGet("count")]
+        public async Task<ActionResult> Count()
+        {
+            var order = await _orderService.CountOrder();
+            return Ok(new
+            {
+                message = "Order counted successfully",
+                data = order
+            });
+        }
+        [HttpGet("total-prices/{orderStatus}")]
+        public async Task<ActionResult> TotalPrice(OrderStatus orderStatus)
+        {
+            var total = await _orderService.SumPriceOrder(orderStatus);
+            return Ok(new
+            {
+                message = "Data counted successfully",
+                data = total
+            });
+        }
     }
 }

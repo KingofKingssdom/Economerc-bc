@@ -11,5 +11,6 @@ namespace Ecommerce.Services
         public Task<ResProductVariantDto> UpdateProductVariant(long id, long productId ,ReqProductVariantDto reqProductVariantDto);
         public Task<ResProductVariantDto> DeleteProductVariant(long id);
         public Task<List<ResProductVariantDto>> GetAllProductVariantByProductId(long id);
+        public Task<long> CountProduct();
     }
 }

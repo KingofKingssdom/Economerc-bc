@@ -101,5 +101,16 @@ namespace Ecommerce.Controllers
                 data = respoductVariant
             });
         }
+
+        [HttpGet("total-products")]
+        public async Task<ActionResult> TotalProduct()
+        {
+            var total = await _productVariantService.CountProduct();
+            return Ok(new
+            {
+                message = "Data counted successfully",
+                data = total
+            });
+        }
     }
 }
