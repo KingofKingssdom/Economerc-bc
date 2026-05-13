@@ -13,6 +13,8 @@ namespace Ecommerce.Services
         public Task<List<ResOrderDto>> GetAllOrder();
         public Task<long> CountOrder();
         public Task<double> SumPriceOrder(OrderStatus orderStatus);
+
+        public Task<List<ResOrderRevenueDto>> GetOrderByOrderStatus(OrderStatus orderStatus);
              
     }
 }

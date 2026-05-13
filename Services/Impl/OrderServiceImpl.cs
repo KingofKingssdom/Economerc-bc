@@ -167,6 +167,23 @@ namespace Ecommerce.Services.Impl
                 .SumAsync(o => o.TotalPrice);
             return total; 
         }
+        public async Task<List<ResOrderRevenueDto>> GetOrderByOrderStatus(OrderStatus orderStatus)
+        {
+            var orders = await _context.Orders
+                .Where(o => o.OrderStatus == orderStatus)
+                .ToListAsync();
+            if(orders == null)
+            {
+                throw new Exception("No orders found with the required status");
+            }
+            var resOrders = orders.Select(o => new ResOrderRevenueDto()
+            {
+                DayCreate = o.DayCreate,
+                TotalPrice = o.TotalPrice,
+                
+            }).ToList();
+            return resOrders;
+        }
 
     }
 }

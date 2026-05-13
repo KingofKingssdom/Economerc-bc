@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Ecommerce.Controllers
 {
     [ApiController]
-    [Route("api/productSpecification")]
+    [Route("api/product-specifications")]
     public class ProductSpecificationController: ControllerBase
     {
         private readonly IProductSpecificationService _productSpecificationService;

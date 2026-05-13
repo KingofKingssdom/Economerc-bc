@@ -107,5 +107,24 @@ namespace Ecommerce.Controllers
                 data = total
             });
         }
+        [HttpGet("orderStatus/{orderStatus}")]
+        public async Task<ActionResult> GetByOrderStatus(OrderStatus orderStatus)
+        {
+            try
+            {
+                var resOrder = await _orderService.GetOrderByOrderStatus(orderStatus);
+                return Ok(new
+                {
+                    message = "Data is retrieved successfully",
+                    data = resOrder
+                });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            
+
+        }
     }
 }
