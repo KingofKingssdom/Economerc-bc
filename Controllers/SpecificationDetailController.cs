@@ -16,7 +16,7 @@ namespace Ecommerce.Controllers
             _specificationDetailService = specificationService;
         }
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResSpecificationDetailDto>> Create(List<ReqSpecificationDetailDto> reqSpecificationDetailDto)
         {
             var specificationDetail = await _specificationDetailService.CreateSpecificationDetail(reqSpecificationDetailDto);

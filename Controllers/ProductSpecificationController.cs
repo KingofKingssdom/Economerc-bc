@@ -89,5 +89,27 @@ namespace Ecommerce.Controllers
             }
 
         }
+
+        [HttpPost("specification-mapping")]
+        public async Task<ActionResult> CreateProductSpecificationMapping(ReqSpecificationMapping reqDto)
+        {
+            try
+            {
+                var resProductSpecification = await _productSpecificationService.CreateProductSpecificationMapping(reqDto);
+                return Ok(new
+                {
+                    message = "Data is created successfully"
+                });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = "Data is created fail"
+                });
+            }
+            
+        }
+        
     }
 }

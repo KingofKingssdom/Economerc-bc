@@ -9,8 +9,8 @@ namespace Ecommerce.Services
             CreateProductSpecification(ReqProductSpecificationDto reqProductSpecificationDto);
         public Task<ResProductSpecificationDto> GetProductSpecificationById(long id);
         public Task<List<ResProductSpecificationDto>> GetAllProductSpecification();
-        public Task<ResProductSpecificationDto> 
-            UpdateProductSpecification(long id, ReqProductSpecificationDto reqProductSpecificationDto);
+        public Task<ResProductSpecificationDto> UpdateProductSpecification(long id, ReqProductSpecificationDto reqProductSpecificationDto);
         public Task<ResProductSpecificationDto> DeleteProductSpecification(long id);
+        public Task<bool> CreateProductSpecificationMapping(ReqSpecificationMapping reqSpecificationMapping);
     }
 }

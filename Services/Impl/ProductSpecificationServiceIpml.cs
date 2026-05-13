@@ -86,5 +86,26 @@ namespace Ecommerce.Services.Impl
                 SpecificationName = productSpecification.SpecificationName
             };
         }
+        public async Task<bool> CreateProductSpecificationMapping(ReqSpecificationMapping reqSpecificationMapping)
+        {
+            var product = await _context.Products.FindAsync(reqSpecificationMapping.ProductId);
+            if(product == null)
+            {
+                throw new Exception("Not found product");
+            }
+            var existingMappings = _context.ProductSpecificationMappings
+                                   .Where(m => m.ProductId == reqSpecificationMapping.ProductId);
+
+            _context.ProductSpecificationMappings.RemoveRange(existingMappings);
+            var newMappings = reqSpecificationMapping.ProductSpecificationIds.Select(specId => new ProductSpecificationMapping
+            {
+                ProductId = reqSpecificationMapping.ProductId,
+                ProductSpecificationId = specId
+            });
+
+            await _context.ProductSpecificationMappings.AddRangeAsync(newMappings);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
