@@ -1,10 +1,12 @@
 ﻿using Ecommerce.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Controllers
 {
     [Route("api/payment")]
     [ApiController]
+    [Authorize(Roles = "Admin, Customer")]
     public class PaymentController: ControllerBase
     {
         private readonly VNPayService _vnpayService;

@@ -8,7 +8,7 @@ namespace Ecommerce.Controllers
 {
     [ApiController]
     [Route("api/brand")]
-    //[Authorize(Roles ="Admin")]
+    [Authorize(Roles ="Admin")]
     public class BrandController: ControllerBase
     {
         private readonly IBrandService _brandService;

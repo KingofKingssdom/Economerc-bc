@@ -54,7 +54,7 @@ namespace Ecommerce.Services.Impl
 
 
 
-            if (roleName == "Customer")
+            if (roleName == "Customer" || roleName == "Admin")
             {
                 
                 Cart cart = new Cart { User = user };

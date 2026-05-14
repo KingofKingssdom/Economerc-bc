@@ -1,11 +1,13 @@
 ﻿using Ecommerce.DTOs.ResponseDTOs;
 using Ecommerce.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Controllers
 {
     [ApiController]
     [Route("api/order-items")]
+    [Authorize(Roles = "Admin, Customer")]
     public class OrderItemController:ControllerBase
     {
         private readonly IOrderItemService _orderItemService;

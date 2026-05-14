@@ -17,6 +17,7 @@ namespace Ecommerce.Controllers
             _categoryService = categoryService;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResCategoryDto>> Create(ReqCategoryDto reqCatgoryDto)
         {
             try
@@ -36,6 +37,7 @@ namespace Ecommerce.Controllers
             
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResCategoryDto>> GetAll()
         {
             var resCategories = await _categoryService.GetAllCategory();
@@ -48,6 +50,7 @@ namespace Ecommerce.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResCategoryDto>> GetById(long id)
         {
             try {
@@ -65,7 +68,7 @@ namespace Ecommerce.Controllers
         }
 
         [HttpPut("categoryId/{categoryId}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResCategoryDto>> Update(long categoryId, ReqCategoryDto reqCategoryDto)
         {
             try
@@ -102,6 +105,7 @@ namespace Ecommerce.Controllers
             
         }
         [HttpGet("categoryCode/{categoryCode}")]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult<ResCategoryDto>> GetByCategoryCode(string categoryCode)
         {
             try

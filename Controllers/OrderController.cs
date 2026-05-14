@@ -2,6 +2,7 @@
 using Ecommerce.DTOs.ResponseDTOs;
 using Ecommerce.Responses.Enum;
 using Ecommerce.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Controllers
@@ -16,6 +17,7 @@ namespace Ecommerce.Controllers
             _orderService = orderService;
         }
         [HttpPost("{userId}")]
+        [Authorize(Roles ="Admin, Customer")]
         public async Task<ActionResult<ResOrderDto>> Create(long userId, [FromBody] ReqOrderDto reqOrderDto)
         {
             if (reqOrderDto.SelectedCartItemIds == null || !reqOrderDto.SelectedCartItemIds.Any())
@@ -32,6 +34,7 @@ namespace Ecommerce.Controllers
 
         }
         [HttpGet("{userId}")]
+        [Authorize(Roles ="Admin, Customer")]
         public async Task<ActionResult<List<ResOrderDto>>> GetAllOrderByUserId(long userId)
         {
             var orders = await _orderService.GetAllOrderByUserId(userId);
@@ -42,6 +45,7 @@ namespace Ecommerce.Controllers
             });
         }
         [HttpPut("orderId/{orderId}/newOrderStatus/{newOrderStatus}")]
+        [Authorize( Roles = "Admin, Customer")]
         public async Task<ActionResult<ResOrderDto>> UpdateOrderByOrderStatus(long orderId, OrderStatus newOrderStatus)
         {
             try
@@ -59,6 +63,7 @@ namespace Ecommerce.Controllers
             }
         }
         [HttpPut("{orderId}")]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult<ResOrderDto>> CancelOrderByUserId(long orderId)
         {
             try
@@ -78,6 +83,7 @@ namespace Ecommerce.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, Customer")]
         public async Task<ActionResult> GetAll()
         {
             var resOrders = await _orderService.GetAllOrder();
@@ -88,6 +94,7 @@ namespace Ecommerce.Controllers
             });
         }
         [HttpGet("count")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Count()
         {
             var order = await _orderService.CountOrder();
@@ -98,6 +105,7 @@ namespace Ecommerce.Controllers
             });
         }
         [HttpGet("total-prices/{orderStatus}")]
+        [Authorize (Roles = "Admin")]
         public async Task<ActionResult> TotalPrice(OrderStatus orderStatus)
         {
             var total = await _orderService.SumPriceOrder(orderStatus);
@@ -108,6 +116,7 @@ namespace Ecommerce.Controllers
             });
         }
         [HttpGet("orderStatus/{orderStatus}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> GetByOrderStatus(OrderStatus orderStatus)
         {
             try
